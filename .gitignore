@@ -1,9 +1,13 @@
+# Temporary Files
+tmp.json
+
 # Model Weights
 *.pt
 
 # Output & Data
 data/
 runs/
+tmp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
