@@ -1,0 +1,3 @@
+[submodule "externals/yolov7"]
+	path = externals/yolov7
+	url = https://github.com/WongKinYiu/yolov7.git
