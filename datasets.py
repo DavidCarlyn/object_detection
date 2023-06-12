@@ -6,16 +6,16 @@ from PIL import Image
 from utils import load_json
 
 class ToyDetectionDataset(torch.utils.data.Dataset):
-    def __init__(self, root, transforms):
+    def __init__(self, root, set_type="train", transforms=None):
         self.transforms = transforms
         self.img_paths = []
-        for root_dir, dirs, paths in os.walk(root):
+        for root_dir, dirs, paths in os.walk(os.join(root, set_type, "images")):
             for path in paths:
                 ext = os.path.splitext(path)[1]
                 if ext != ".png": continue
                 self.img_paths.append(os.path.join(root, path))
 
-        self.annotations = load_json(os.path.join(root, "annotations.json"))
+        self.annotations = load_json(os.path.join(root, set_type, "labels.json"))
 
     def __len__(self):
         return len(self.img_paths)

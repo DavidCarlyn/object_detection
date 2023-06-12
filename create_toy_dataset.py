@@ -1,16 +1,27 @@
 import random
 import os
-
 from enum import IntEnum
 
 from PIL import Image, ImageDraw
 
-from utils import save_json
+from utils import save_text
+
+"""
+Save dataset in COCO format for YOLO according to: https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data
+"""
 
 class ToyLabels(IntEnum):
     SQUARE = 0
     TRIANGLE = 1
     CIRCLE = 2
+
+    @classmethod
+    def int_to_name(self, x):
+        if x == 0: return "square"
+        if x == 1: return "triangle"
+        if x == 2: return "circle"
+
+        return None
 
 def draw_square(im, bb, color="green"):
     """
@@ -99,17 +110,45 @@ def create_toy_dataset(num=200, obj_range=(1, 4), obj_size_range=(4, 32), colors
 
     return data
 
-def save_dataset(dataset, dir=os.path.join("data", "toy")):
-    annotations = []
+def save_dataset(dataset, dir=os.path.join("data", "toy"), set_type="train"):
+    """
+    ../datasets/coco128/images/im0.jpg  # image
+    ../datasets/coco128/labels/im0.txt  # label
+
+    
+    One row per object
+    Each row is class x_center y_center width height format.
+    Box coordinates must be in normalized xywh format (from 0 - 1). If your boxes are in pixels, divide x_center and width by image width, and y_center and height by image height.
+    Class numbers are zero-indexed (start from 0).
+
+    """
+
     for i, (img, bbs, lbls) in enumerate(dataset):
-        annotations.append({
-            "id" : i,
-            "bbs" : bbs,
-            "lbls" : lbls
-        })
-        img.save(os.path.join(dir, f"{i}.png"))
-    save_json(annotations, os.path.join(dir, "annotations.json"))
+        img_path = os.path.join(dir, set_type, "images", f"{i+1}.png")
+        lbl_path = os.path.join(dir, set_type, "labels", f"{i+1}.txt")
+
+        labels = []
+        for bb, lbl in zip(bbs, lbls):
+            box_w, box_h = bb[2]-bb[0]+1, bb[3]-bb[1]+1
+            box_x, box_y = bb[0] + (box_w / 2), bb[1] + (box_h / 2)
+
+            box_x, box_y, box_w, box_h = box_x / img.width, box_y / img.height, box_w / img.width, box_h / img.height
+
+            labels.append(f"{lbl} {box_x} {box_y} {box_w} {box_y}\n")
+
+        img.save(img_path)
+        save_text(labels, lbl_path, is_list=True)
 
 if __name__ == "__main__":
     dataset = create_toy_dataset(200)
-    save_dataset(dataset)
+    os.makedirs(os.path.join("data", "toy", "train", "images"), exist_ok=True)
+    os.makedirs(os.path.join("data", "toy", "train", "labels"), exist_ok=True)
+    save_dataset(dataset, set_type="train")
+    dataset = create_toy_dataset(100)
+    os.makedirs(os.path.join("data", "toy", "val", "images"), exist_ok=True)
+    os.makedirs(os.path.join("data", "toy", "val", "labels"), exist_ok=True)
+    save_dataset(dataset, set_type="val")
+    dataset = create_toy_dataset(100)
+    os.makedirs(os.path.join("data", "toy", "test", "images"), exist_ok=True)
+    os.makedirs(os.path.join("data", "toy", "test", "labels"), exist_ok=True)
+    save_dataset(dataset, set_type="test")
