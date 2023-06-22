@@ -1,6 +1,7 @@
 import random
 import os
 from enum import IntEnum
+from argparse import ArgumentParser
 
 from PIL import Image, ImageDraw
 
@@ -140,15 +141,22 @@ def save_dataset(dataset, dir=os.path.join("data", "toy"), set_type="train"):
         save_text(labels, lbl_path, is_list=True)
 
 if __name__ == "__main__":
-    dataset = create_toy_dataset(200)
+    parser = ArgumentParser()
+    parser.add_argument("--train_imgs", type=int, default=200)
+    parser.add_argument("--val_imgs", type=int, default=200)
+    parser.add_argument("--test_imgs", type=int, default=200)
+    parser.add_argument("--img_size", type=int, default=64)
+    args = parser.parse_args()
+
+    dataset = create_toy_dataset(args.train_imgs, img_size=(args.img_size, args.img_size))
     os.makedirs(os.path.join("data", "toy", "train", "images"), exist_ok=True)
     os.makedirs(os.path.join("data", "toy", "train", "labels"), exist_ok=True)
     save_dataset(dataset, set_type="train")
-    dataset = create_toy_dataset(100)
+    dataset = create_toy_dataset(args.val_imgs, img_size=(args.img_size, args.img_size))
     os.makedirs(os.path.join("data", "toy", "val", "images"), exist_ok=True)
     os.makedirs(os.path.join("data", "toy", "val", "labels"), exist_ok=True)
     save_dataset(dataset, set_type="val")
-    dataset = create_toy_dataset(100)
+    dataset = create_toy_dataset(args.test_imgs, img_size=(args.img_size, args.img_size))
     os.makedirs(os.path.join("data", "toy", "test", "images"), exist_ok=True)
     os.makedirs(os.path.join("data", "toy", "test", "labels"), exist_ok=True)
     save_dataset(dataset, set_type="test")
