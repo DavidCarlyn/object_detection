@@ -135,7 +135,7 @@ def save_dataset(dataset, dir=os.path.join("data", "toy"), set_type="train"):
 
             box_x, box_y, box_w, box_h = box_x / img.width, box_y / img.height, box_w / img.width, box_h / img.height
 
-            labels.append(f"{lbl} {box_x} {box_y} {box_w} {box_y}\n")
+            labels.append(f"{lbl} {box_x} {box_y} {box_w} {box_h}\n")
 
         img.save(img_path)
         save_text(labels, lbl_path, is_list=True)
