@@ -1,3 +1,12 @@
+"""
+Curation for Coffee Leaf dataset located at:
+https://www.kaggle.com/datasets/alvarole/coffee-leaves-disease
+
+Brito Silva, Lucas; Cavalcante Carneiro, Álvaro Leandro; Silveira Almeida Renaud Faulin, Marisa (2020), 
+“rust (Hemileia vastatrix) and leaf miner (Leucoptera coffeella) in coffee crop (Coffea arabica).”, 
+Mendeley Data, V5, doi: 10.17632/vfxf4trtcg.5
+"""
+
 import os
 import random
 from enum import IntEnum
