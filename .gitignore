@@ -4,6 +4,10 @@ tmp.json
 # Model Weights
 *.pt
 
+# Images
+*.jpg
+*.png
+
 # Output & Data
 data/
 runs/
