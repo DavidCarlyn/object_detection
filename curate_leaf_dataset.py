@@ -84,12 +84,14 @@ def get_args():
 def save_data(data, root_path):
     for i, (lbl, img_path, bbs) in tqdm(enumerate(data)):
         # Save Image
-        Image.open(img_path).save(os.path.join(root_path, "images", f"{i+1}.png"))
+        img = Image.open(img_path)
+        img.resize((512,512), Image.Resampling.LANCZOS)
+        img.save(os.path.join(root_path, "images", f"{i+1}.png"))
 
         # Save Annotations
         anno = []
         for bb in bbs:
-            anno.append(str(lbl) + " ".join(map(lambda x: str(x), bb)) + "\n")
+            anno.append(str(int(lbl)) + " " + " ".join(map(lambda x: str(x), bb)) + "\n")
         save_text(anno, os.path.join(root_path, "labels", f"{i+1}.txt"), is_list=True)
 
 if __name__ == "__main__":
