@@ -1,0 +1,1 @@
+python externals/yolov7/train.py --workers 8 --batch-size 4 --data data/leaf/leaf.yaml --img 4000 2250 --cfg cfg/training/yolov7-leaf.yaml --weights 'data/weights/yolov7_training.pt' --name yolov7-leaf --hyp data/hyp.scratch.leaf.yaml
