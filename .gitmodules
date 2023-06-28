@@ -1,3 +1,8 @@
 [submodule "externals/yolov7"]
 	path = externals/yolov7
 	url = https://github.com/WongKinYiu/yolov7.git
+	branch = main
+[submodule "externals/yolov7_seg"]
+	path = externals/yolov7_seg
+	url = https://github.com/WongKinYiu/yolov7.git
+	branch = u7
