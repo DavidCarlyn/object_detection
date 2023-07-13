@@ -1,0 +1,1 @@
+python externals/yolov7/test.py --data data/rust6/rust6.yaml --img 640 --weights 'runs/train/yolov7-rust6/weights/last.pt' --name yolov7-rust6

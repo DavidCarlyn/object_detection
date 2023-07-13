@@ -1,0 +1,1 @@
+python externals/yolov7/train.py --workers 8 --batch-size 32 --data data/rust6/rust6.yaml --img 640 640 --cfg cfg/training/yolov7-rust6.yaml --weights 'runs/train/yolov7-rust6/weights/last.pt' --name yolov7-rust6 --hyp data/hyp.scratch.rust6.yaml
