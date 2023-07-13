@@ -1,0 +1,1 @@
+python externals/yolov7/train.py --workers 8 --batch-size 4 --data data/toy/toy.yaml --img 64 64 --cfg cfg/training/yolov7-toy.yaml --weights 'data/weights/yolov7_training.pt' --name yolov7-toy --hyp data/hyp.scratch.toy.yaml
