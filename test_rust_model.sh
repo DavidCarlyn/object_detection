@@ -1,1 +1,0 @@
-python externals/yolov7/detect.py --weights data/last.pt --conf 0.5 --img-size 736 --source data/rust_test.mp4
