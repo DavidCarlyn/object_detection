@@ -5,6 +5,9 @@ import tkinter as tk
 
 from tkinter.filedialog import askopenfile, askdirectory
 
+from ui.buttons import MenuButton
+from ui.labels import HeaderLabel
+
 class TrainingFrame(tk.Frame):
     def __init__(self, root, back_cmd=lambda: None):
         super().__init__(root)
@@ -54,15 +57,11 @@ class TrainingFrame(tk.Frame):
         print("DONE")
 
     def build(self, back_cmd=lambda: None):
-        greeting = tk.Label(self, text="Training Frame")
+        greeting = HeaderLabel(self, text="Training Frame")
         greeting.pack()
 
-        back_btn = tk.Button(self,
+        back_btn = MenuButton(self,
             text="Home Page",
-            width=20,
-            height=5,
-            bg="lightgrey",
-            fg="black",
             command=back_cmd
         )
         back_btn.pack()
