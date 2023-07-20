@@ -1,3 +1,5 @@
+import subprocess
+
 import json
 
 def save_json(obj, path):
@@ -14,3 +16,11 @@ def save_text(text, path, is_list=False):
             f.writelines(text)
         else:
             f.write(text)
+
+def execute_command(cmd_str, conn=None):
+    stdout = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE).stdout
+    data = stdout.read()
+    print(data)
+    if conn is not None:
+        conn.send(data)
+        conn.close()
