@@ -17,7 +17,7 @@ class TrainingFrame(tk.Frame):
         self.cache = load_cache(TRAINING_CACHE_NAME)
         if self.cache is None:
             self.cache = {
-                "save_dir" : "data/runs/inference",
+                "save_dir" : "data/runs/training",
                 "result_name" : "experiment001",
                 "img_size" : 512,
                 "workers" : 2,
