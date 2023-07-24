@@ -17,10 +17,12 @@ def save_text(text, path, is_list=False):
         else:
             f.write(text)
 
-def execute_command(cmd_str, conn=None):
-    stdout = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE).stdout
-    data = stdout.read()
-    print(data)
-    if conn is not None:
-        conn.send(data)
-        conn.close()
+def execute_command(cmd_str, pipe_conn=None):
+    p = subprocess.Popen(cmd_str, shell=True)
+
+    if pipe_conn is not None:
+        while p.poll() is None:
+            for line in p.stdout.readlines():
+                pipe_conn.send(line)
+        pipe_conn.close()
+    

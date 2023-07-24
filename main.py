@@ -1,5 +1,6 @@
 import os
 import multiprocessing as mp
+import threading
 
 import tkinter as tk
 
@@ -33,21 +34,31 @@ class App(tk.Tk):
         if self.run_thread is not None:
             self.run_thread.terminate()
 
-    def test(self):
-        print("HI")
+    def update_train_window(self, conn):
+        if conn.closed:
+            print("THREAD CLOSED")
+            return
+        print("="*100)
+        print("TEST LINE")
 
+        if conn.poll():
+            data = conn.recv()
+            print(data)
+
+        threading.Timer(1, self.update_train_window, conn).start()
+        
     def build_train_progress_window(self, cmd_str):
         self.clear_window()
         frame = TrainingProgressFrame(self, back_cmd=self.build_train_window, stop_thread_cmd=self.stop_thread)
         frame.pack()
 
-        print(cmd_str)
-        #self.run_thread = multiprocessing.Process(target=frame.run, args=(cmd_str, ), daemon=True)
-        #self.run_thread = mp.Process(target=self.test, args=(), daemon=True)
         parent_conn, child_conn = mp.Pipe()
         self.run_thread = mp.Process(target=execute_command, args=(cmd_str, child_conn))
         self.run_thread.start()
-        #print(parent_conn.recv())
+
+        self.update_train_window(parent_conn)
+
+
 
     
     def build_infer_window(self):
