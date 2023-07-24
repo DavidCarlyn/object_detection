@@ -15,7 +15,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Rust Detector Management")
-        self.geometry('500x500')
+        self.geometry('')
         self.project_path = os.path.dirname(os.path.abspath(__file__))
         self.run_thread = None
         
