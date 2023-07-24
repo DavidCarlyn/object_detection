@@ -9,20 +9,22 @@ from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
 
 class TrainingFrame(tk.Frame):
-    def __init__(self, root, back_cmd=lambda: None):
+    def __init__(self, root, back_cmd=lambda: None, open_progress_page=lambda: None):
         super().__init__(root)
 
         self.save_dir_var = tk.StringVar(value="data/runs/inference")
         self.result_name_var = tk.StringVar(value="experiment001")
 
-        self.img_size_var = tk.IntVar(value=256)
-        self.workers_var = tk.IntVar(value=8)
-        self.batch_size_var = tk.IntVar(value=4)
+        self.img_size_var = tk.IntVar(value=512)
+        self.workers_var = tk.IntVar(value=2)
+        self.batch_size_var = tk.IntVar(value=2)
 
         self.data_file_var = tk.StringVar(value="")
         self.model_config = tk.StringVar(value="")
         self.model_var = tk.StringVar(value="")
         self.training_config_var = tk.StringVar(value="")
+
+        self.open_progress_page = open_progress_page
 
         self.build(back_cmd)
 
@@ -32,7 +34,7 @@ class TrainingFrame(tk.Frame):
 
     def open_model_file(self):
         file = askopenfile(mode ='r', filetypes =[('Model Files', '*.pt')])
-        self.model_path_var.set(file.name)
+        self.model_var.set(file.name)
     
     def open_yaml_file(self, ent_var):
         file = askopenfile(mode ='r', filetypes =[('YAML Files', '*.yaml'), ('YAML Files', '*.yml')])
@@ -49,12 +51,7 @@ class TrainingFrame(tk.Frame):
         cmd_str += f" --weights {self.model_var.get()}"
         cmd_str += f" --hyp {self.training_config_var.get()}"
 
-        print(cmd_str)
-
-        stdout = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE).stdout
-
-        print(stdout.read())
-        print("DONE")
+        self.open_progress_page(cmd_str)
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Training Frame")
@@ -131,7 +128,7 @@ class TrainingFrame(tk.Frame):
             height=3,
             bg="lightgrey",
             fg="black",
-            command=lambda: self.open_yaml_file(self.model_var)
+            command=lambda: self.open_model_file()
         )
         model_weights_file_btn.pack()
 
