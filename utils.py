@@ -1,6 +1,21 @@
+import os
 import subprocess
+import tempfile
 
 import json
+
+def get_tmp_dir():
+    return tempfile.gettempdir()
+
+def load_cache(fname):
+    path = os.path.join(get_tmp_dir(), fname)
+    if os.path.exists(path):
+        return load_json(path)
+    return None
+
+def save_cache(obj, fname):
+    path = os.path.join(get_tmp_dir(), fname)
+    save_json(obj, path)
 
 def save_json(obj, path):
     with open(path, 'w') as f:

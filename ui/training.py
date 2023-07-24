@@ -7,22 +7,38 @@ from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
+from utils import load_cache, save_cache
 
+TRAINING_CACHE_NAME = "training.cache"
 class TrainingFrame(tk.Frame):
     def __init__(self, root, back_cmd=lambda: None, open_progress_page=lambda: None):
         super().__init__(root)
 
-        self.save_dir_var = tk.StringVar(value="data/runs/inference")
-        self.result_name_var = tk.StringVar(value="experiment001")
+        self.cache = load_cache(TRAINING_CACHE_NAME)
+        if self.cache is None:
+            self.cache = {
+                "save_dir" : "data/runs/inference",
+                "result_name" : "experiment001",
+                "img_size" : 512,
+                "workers" : 2,
+                "batch_size" : 2,
+                "data_file" : "",
+                "model_config" : "",
+                "model" : "",
+                "training_config" : ""
+            }
 
-        self.img_size_var = tk.IntVar(value=512)
-        self.workers_var = tk.IntVar(value=2)
-        self.batch_size_var = tk.IntVar(value=2)
+        self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
+        self.result_name_var = tk.StringVar(value=self.cache["result_name"])
 
-        self.data_file_var = tk.StringVar(value="")
-        self.model_config = tk.StringVar(value="")
-        self.model_var = tk.StringVar(value="")
-        self.training_config_var = tk.StringVar(value="")
+        self.img_size_var = tk.IntVar(value=self.cache["img_size"])
+        self.workers_var = tk.IntVar(value=self.cache["workers"])
+        self.batch_size_var = tk.IntVar(value=self.cache["batch_size"])
+
+        self.data_file_var = tk.StringVar(value=self.cache["data_file"])
+        self.model_config = tk.StringVar(value=self.cache["model_config"])
+        self.model_var = tk.StringVar(value=self.cache["model"])
+        self.training_config_var = tk.StringVar(value=self.cache["training_config"])
 
         self.open_progress_page = open_progress_page
 
@@ -40,6 +56,20 @@ class TrainingFrame(tk.Frame):
         file = askopenfile(mode ='r', filetypes =[('YAML Files', '*.yaml'), ('YAML Files', '*.yml')])
         ent_var.set(file.name)
 
+    def save_cache(self):
+        self.cache = {
+            "save_dir" : self.save_dir_var.get(),
+            "result_name" : self.result_name_var.get(),
+            "img_size" : self.img_size_var.get(),
+            "workers" : self.workers_var.get(),
+            "batch_size" : self.batch_size_var.get(),
+            "data_file" : self.data_file_var.get(),
+            "model_config" : self.model_config.get(),
+            "model" : self.model_var.get(),
+            "training_config" : self.training_config_var.get()
+        }
+        save_cache(self.cache, TRAINING_CACHE_NAME)
+
     def run(self):
         script_path = os.path.join(self.master.project_path, "externals", "yolov7", "train.py")
         cmd_str = f"python {script_path} --workers {self.workers_var.get()} --batch-size {self.batch_size_var.get()}" 
@@ -51,6 +81,7 @@ class TrainingFrame(tk.Frame):
         cmd_str += f" --weights {self.model_var.get()}"
         cmd_str += f" --hyp {self.training_config_var.get()}"
 
+        self.save_cache()
         self.open_progress_page(cmd_str)
 
     def build(self, back_cmd=lambda: None):
