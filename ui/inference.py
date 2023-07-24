@@ -6,15 +6,28 @@ from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
+from utils import load_cache, save_cache
 
+INFERENCE_CACHE_NAME = "inference.cache"
 class InferenceFrame(tk.Frame):
     def __init__(self, root, back_cmd=lambda: None):
         super().__init__(root)
-        self.result_name_var = tk.StringVar(value="experiment001")
-        self.img_size_var = tk.StringVar(value="256")
-        self.model_path_var = tk.StringVar(value="")
-        self.save_dir_var = tk.StringVar(value="data/runs/inference")
-        self.target_path_var = tk.StringVar(value="")
+
+        self.cache = load_cache(INFERENCE_CACHE_NAME)
+        if self.cache is None:
+            self.cache = {
+                "save_dir" : "data/runs/inference",
+                "result_name" : "experiment001",
+                "img_size" : 512,
+                "target" : "",
+                "model" : ""
+            }
+
+        self.result_name_var = tk.StringVar(value=self.cache["result_name"])
+        self.img_size_var = tk.StringVar(value=self.cache["img_size"])
+        self.model_path_var = tk.StringVar(value=self.cache["model"])
+        self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
+        self.target_path_var = tk.StringVar(value=self.cache["target"])
 
         self.build(back_cmd)
 
@@ -30,6 +43,16 @@ class InferenceFrame(tk.Frame):
         dir_path = askdirectory()
         self.save_dir_var.set(dir_path)
 
+    def save_cache(self):
+        self.cache = {
+            "save_dir" : self.save_dir_var.get(),
+            "result_name" : self.result_name_var.get(),
+            "img_size" : self.img_size_var.get(),
+            "target" : self.target_path_var.get(),
+            "model" : self.model_path_var.get()
+        }
+        save_cache(self.cache, INFERENCE_CACHE_NAME)
+
     def run(self):
         script_path = os.path.join(self.master.project_path, "externals", "yolov7", "detect.py")
         cmd_str = f"python {script_path} --source {self.target_path_var.get()}" 
@@ -37,6 +60,8 @@ class InferenceFrame(tk.Frame):
         cmd_str += f" --project {self.save_dir_var.get()}"
         cmd_str += f" --name {self.result_name_var.get()}"
         cmd_str += f" --img {self.img_size_var.get()} --save-txt"
+
+        self.save_cache()
 
         print(cmd_str)
 
