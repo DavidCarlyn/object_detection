@@ -33,11 +33,19 @@ def save_text(text, path, is_list=False):
             f.write(text)
 
 def execute_command(cmd_str, pipe_conn=None):
-    p = subprocess.Popen(cmd_str, shell=True)
+    p = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, universal_newlines=True)
 
     if pipe_conn is not None:
-        while p.poll() is None:
-            for line in p.stdout.readlines():
-                pipe_conn.send(line)
-        pipe_conn.close()
+        while True:
+            data = pipe_conn.recv()
+            if data == "STOP":
+                print("HERE")
+                p.kill()
+                pipe_conn.close()
+                return
+
+        #poll = p.poll()
+        #while poll is None:
+        #    line = p.stdout.readline()
+        #    pipe_conn.send(line)
     

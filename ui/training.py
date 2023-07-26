@@ -40,6 +40,8 @@ class TrainingFrame(tk.Frame):
         self.model_var = tk.StringVar(value=self.cache["model"])
         self.training_config_var = tk.StringVar(value=self.cache["training_config"])
 
+        self.error_lbl = None
+
         self.open_progress_page = open_progress_page
 
         self.build(back_cmd)
@@ -70,7 +72,23 @@ class TrainingFrame(tk.Frame):
         }
         save_cache(self.cache, TRAINING_CACHE_NAME)
 
+    def add_exists_error(self, path):
+        if self.error_lbl is not None:
+            return
+        
+        self.error_lbl = tk.Label(self,
+            text=f"ERROR: {path} already exists. Please choose a different 'Result Name' or 'Save Directory'.",
+            bg="yellow",
+            fg="red"
+        )
+        self.error_lbl.pack()
+
     def run(self):
+        save_path = os.path.join(self.save_dir_var.get(), self.result_name_var.get())
+        if os.path.exists(save_path):
+            self.add_exists_error(save_path)
+            return
+
         script_path = os.path.join(self.master.project_path, "externals", "yolov7", "train.py")
         cmd_str = f"python {script_path} --workers {self.workers_var.get()} --batch-size {self.batch_size_var.get()}" 
         cmd_str += f" --img {self.img_size_var.get()}"
@@ -82,7 +100,7 @@ class TrainingFrame(tk.Frame):
         cmd_str += f" --hyp {self.training_config_var.get()}"
 
         self.save_cache()
-        self.open_progress_page(cmd_str)
+        self.open_progress_page(cmd_str, save_path)
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Training Frame")
