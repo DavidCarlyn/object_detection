@@ -20,6 +20,7 @@ class TrainingFrame(tk.Frame):
                 "save_dir" : "data/runs/training",
                 "result_name" : "experiment001",
                 "img_size" : 512,
+                "epochs" : 300,
                 "workers" : 2,
                 "batch_size" : 2,
                 "data_file" : "",
@@ -32,6 +33,7 @@ class TrainingFrame(tk.Frame):
         self.result_name_var = tk.StringVar(value=self.cache["result_name"])
 
         self.img_size_var = tk.IntVar(value=self.cache["img_size"])
+        self.epochs_var = tk.IntVar(value=self.cache["epochs"])
         self.workers_var = tk.IntVar(value=self.cache["workers"])
         self.batch_size_var = tk.IntVar(value=self.cache["batch_size"])
 
@@ -63,6 +65,7 @@ class TrainingFrame(tk.Frame):
             "save_dir" : self.save_dir_var.get(),
             "result_name" : self.result_name_var.get(),
             "img_size" : self.img_size_var.get(),
+            "epochs" : self.epochs_var.get(),
             "workers" : self.workers_var.get(),
             "batch_size" : self.batch_size_var.get(),
             "data_file" : self.data_file_var.get(),
@@ -92,6 +95,7 @@ class TrainingFrame(tk.Frame):
         script_path = os.path.join(self.master.project_path, "externals", "yolov7", "train.py")
         cmd_str = f"python {script_path} --workers {self.workers_var.get()} --batch-size {self.batch_size_var.get()}" 
         cmd_str += f" --img {self.img_size_var.get()}"
+        cmd_str += f" --epochs {self.epochs_var.get()}"
         cmd_str += f" --project {self.save_dir_var.get()}"
         cmd_str += f" --name {self.result_name_var.get()}"
         cmd_str += f" --data {self.data_file_var.get()}"
@@ -144,6 +148,11 @@ class TrainingFrame(tk.Frame):
         img_size_lbl.pack()
         img_size_entry = tk.Entry(self, textvariable=self.img_size_var)
         img_size_entry.pack()
+        
+        epochs_lbl = tk.Label(self, text="Number of Epochs")
+        epochs_lbl.pack()
+        epochs_entry = tk.Entry(self, textvariable=self.epochs_var)
+        epochs_entry.pack()
 
         data_file_btn = tk.Button(self,
             text="Data file",
