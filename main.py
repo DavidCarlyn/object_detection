@@ -11,6 +11,9 @@ from ui.training_progress import TrainingProgressFrame
 
 from utils import execute_command
 
+"""
+Main class for training and using the YOLOv7 model
+"""
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
