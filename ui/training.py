@@ -28,7 +28,8 @@ class TrainingFrame(tk.Frame):
                 "model_config" : "",
                 "model" : "",
                 "training_config" : "",
-                "use_gpu" : False
+                "use_gpu" : False,
+                "use_segmentation" : False
             }
 
         self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
@@ -45,6 +46,7 @@ class TrainingFrame(tk.Frame):
         self.training_config_var = tk.StringVar(value=self.cache["training_config"])
 
         self.use_gpu_var = tk.BooleanVar(value=self.cache["use_gpu"])
+        self.use_segmentation_var = tk.BooleanVar(value=self.cache["use_segmentation"])
 
         self.error_lbl = None
 
@@ -76,7 +78,8 @@ class TrainingFrame(tk.Frame):
             "model_config" : self.model_config.get(),
             "model" : self.model_var.get(),
             "training_config" : self.training_config_var.get(),
-            "use_gpu" : self.use_gpu_var.get()
+            "use_gpu" : self.use_gpu_var.get(),
+            "use_segmentation" : self.use_segmentation_var.get()
         }
         save_cache(self.cache, TRAINING_CACHE_NAME)
 
@@ -98,7 +101,9 @@ class TrainingFrame(tk.Frame):
             return
 
         script_path = os.path.join(self.master.project_path, "externals", "yolov7", "train.py")
-        
+        if self.use_segmentation_var.get():
+            script_path = os.path.join(self.master.project_path, "externals", "yolov7_seg", "seg", "segment", "train.py")
+
         devices = "-1"
         if self.use_gpu_var.get():
             devices = ",".join(get_available_gpus())
@@ -175,6 +180,14 @@ class TrainingFrame(tk.Frame):
             offvalue=False
         )
         gpu_chkb.pack()
+        
+        seg_chkb = ttk.Checkbutton(self,
+            text='Train segmentation',
+            variable=self.use_segmentation_var,
+            onvalue=True,
+            offvalue=False
+        )
+        seg_chkb.pack()
 
         data_file_btn = tk.Button(self,
             text="Data file",
