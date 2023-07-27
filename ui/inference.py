@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import tkinter as tk
+from tkinter import ttk
 from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
@@ -20,7 +21,8 @@ class InferenceFrame(tk.Frame):
                 "result_name" : "experiment001",
                 "img_size" : 512,
                 "target" : "",
-                "model" : ""
+                "model" : "",
+                "use_segmentation" : False
             }
 
         self.result_name_var = tk.StringVar(value=self.cache["result_name"])
@@ -28,6 +30,8 @@ class InferenceFrame(tk.Frame):
         self.model_path_var = tk.StringVar(value=self.cache["model"])
         self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
         self.target_path_var = tk.StringVar(value=self.cache["target"])
+
+        self.use_segmentation_var = tk.BooleanVar(value=self.cache["use_segmentation"])
 
         self.build(back_cmd)
 
@@ -49,12 +53,16 @@ class InferenceFrame(tk.Frame):
             "result_name" : self.result_name_var.get(),
             "img_size" : self.img_size_var.get(),
             "target" : self.target_path_var.get(),
-            "model" : self.model_path_var.get()
+            "model" : self.model_path_var.get(),
+            "use_segmentation" : self.use_segmentation_var.get()
         }
         save_cache(self.cache, INFERENCE_CACHE_NAME)
 
     def run(self):
         script_path = os.path.join(self.master.project_path, "externals", "yolov7", "detect.py")
+        if self.use_segmentation_var.get():
+            script_path = os.path.join(self.master.project_path, "externals", "yolov7_seg", "seg", "segment", "predict.py")
+
         cmd_str = f"python {script_path} --source {self.target_path_var.get()}" 
         cmd_str += f" --weights {self.model_path_var.get()}"
         cmd_str += f" --project {self.save_dir_var.get()}"
@@ -128,6 +136,14 @@ class InferenceFrame(tk.Frame):
         img_size_lbl.pack()
         img_size_entry = tk.Entry(self, textvariable=self.img_size_var)
         img_size_entry.pack()
+
+        seg_chkb = ttk.Checkbutton(self,
+            text='Use segmentation',
+            variable=self.use_segmentation_var,
+            onvalue=True,
+            offvalue=False
+        )
+        seg_chkb.pack()
 
         run_btn = tk.Button(self,
             text="Run",
