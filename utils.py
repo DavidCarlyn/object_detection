@@ -1,8 +1,17 @@
 import os
+import sys
 import subprocess
 import tempfile
 
 import json
+
+import torch
+
+def get_available_gpus():
+    return [str(i) for i in range(torch.cuda.device_count())]
+
+def is_on_windows():
+    return sys.platform == "win32"
 
 def get_tmp_dir():
     return tempfile.gettempdir()

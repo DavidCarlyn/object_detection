@@ -2,12 +2,13 @@ import os
 import subprocess
 
 import tkinter as tk
+from tkinter import ttk
 
 from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
-from utils import load_cache, save_cache
+from utils import load_cache, save_cache, get_available_gpus, is_on_windows
 
 TRAINING_CACHE_NAME = "training.cache"
 class TrainingFrame(tk.Frame):
@@ -26,7 +27,8 @@ class TrainingFrame(tk.Frame):
                 "data_file" : "",
                 "model_config" : "",
                 "model" : "",
-                "training_config" : ""
+                "training_config" : "",
+                "use_gpu" : False
             }
 
         self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
@@ -41,6 +43,8 @@ class TrainingFrame(tk.Frame):
         self.model_config = tk.StringVar(value=self.cache["model_config"])
         self.model_var = tk.StringVar(value=self.cache["model"])
         self.training_config_var = tk.StringVar(value=self.cache["training_config"])
+
+        self.use_gpu_var = tk.BooleanVar(value=self.cache["use_gpu"])
 
         self.error_lbl = None
 
@@ -71,7 +75,8 @@ class TrainingFrame(tk.Frame):
             "data_file" : self.data_file_var.get(),
             "model_config" : self.model_config.get(),
             "model" : self.model_var.get(),
-            "training_config" : self.training_config_var.get()
+            "training_config" : self.training_config_var.get(),
+            "use_gpu" : self.use_gpu_var.get()
         }
         save_cache(self.cache, TRAINING_CACHE_NAME)
 
@@ -93,7 +98,16 @@ class TrainingFrame(tk.Frame):
             return
 
         script_path = os.path.join(self.master.project_path, "externals", "yolov7", "train.py")
-        cmd_str = f"python {script_path} --workers {self.workers_var.get()} --batch-size {self.batch_size_var.get()}" 
+        
+        devices = "-1"
+        if self.use_gpu_var.get():
+            devices = ",".join(get_available_gpus())
+        if is_on_windows():
+            cmd_str = f"set CUDA_VISIBLE_DEVICES={devices} & "
+        else:
+            cmd_str = f"CUDA_VISIBLE_DEVICES={devices} "
+        
+        cmd_str += f"python {script_path} --workers {self.workers_var.get()} --batch-size {self.batch_size_var.get()}" 
         cmd_str += f" --img {self.img_size_var.get()}"
         cmd_str += f" --epochs {self.epochs_var.get()}"
         cmd_str += f" --project {self.save_dir_var.get()}"
@@ -153,6 +167,14 @@ class TrainingFrame(tk.Frame):
         epochs_lbl.pack()
         epochs_entry = tk.Entry(self, textvariable=self.epochs_var)
         epochs_entry.pack()
+
+        gpu_chkb = ttk.Checkbutton(self,
+            text='Use GPUs',
+            variable=self.use_gpu_var,
+            onvalue=True,
+            offvalue=False
+        )
+        gpu_chkb.pack()
 
         data_file_btn = tk.Button(self,
             text="Data file",
