@@ -73,9 +73,12 @@ class InferenceFrame(tk.Frame):
 
         print(cmd_str)
 
-        stdout = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE).stdout
+        p = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, universal_newlines=True)
 
-        print(stdout.read())
+        while True:
+            if p.poll(): break
+            print(p.stdout.readline())
+        
         print("DONE")
 
     def build(self, back_cmd=lambda: None):
