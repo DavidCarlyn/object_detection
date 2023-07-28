@@ -1,4 +1,5 @@
 import os
+import signal
 import sys
 import subprocess
 import tempfile
@@ -42,13 +43,19 @@ def save_text(text, path, is_list=False):
             f.write(text)
 
 def execute_command(cmd_str, process_queue=None):
-    p = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, universal_newlines=True)
+    p = subprocess.Popen(cmd_str, shell=True)
 
     if process_queue is not None:
         while True:
             data = process_queue.get()
+            print(data)
             if data == "STOP" or pipe_conn.closed:
-                p.kill()
+                # This works on Windows, may need to test on other platforms
+                # See: https://stackoverflow.com/questions/4789837/how-to-terminate-a-python-subprocess-launched-with-shell-true/4791612#4791612
+                
+                p.send_signal(signal.CTRL_C_EVENT)
+                p.wait()
+                print("Process ended")
                 process_queue.close()
                 return
     
