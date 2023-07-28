@@ -36,16 +36,12 @@ class App(tk.Tk):
 
     def stop_thread(self):
         if self.run_thread is not None:
+            print("stop start")
+            self.process_queue.put("STOP")
+            self.run_thread.join()
             self.run_thread.terminate()
-        
-        print("stop start")
-        self.conn.send("STOP")
-
 
     def update_train_window(self, save_path, frame):
-        if self.conn.closed:
-            print("THREAD CLOSED")
-            return
         if frame.is_training_ended():
             print("Training Ended")
             return
@@ -70,8 +66,8 @@ class App(tk.Tk):
         frame.pack()
         frame.start_training()
 
-        self.conn, child_conn = mp.Pipe(duplex=True)
-        self.run_thread = mp.Process(target=execute_command, args=(cmd_str, child_conn))
+        self.process_queue = mp.Queue()
+        self.run_thread = mp.Process(target=execute_command, args=(cmd_str, self.process_queue))
         self.run_thread.start()
 
         self.update_train_window(save_path, frame)
