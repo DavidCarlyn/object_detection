@@ -13,6 +13,8 @@ class TrainingState(Enum):
     TRAINING = 1,
     COMPLETED = 2,
     CANCELLED = 3
+
+
     
 class TrainingProgressFrame(tk.Frame):
     def __init__(self, root, back_cmd=lambda: None, stop_thread_cmd=lambda: None):
@@ -31,8 +33,11 @@ class TrainingProgressFrame(tk.Frame):
 
     def update_progress(self, cur_epoch, total_epoch):
         self.progress_lbl['text'] = f"Epoch {cur_epoch} of {total_epoch}"
-        self.progress_bar['value'] = cur_epoch
-        self.progress_bar['length'] = total_epoch
+
+        cur_prog = (cur_epoch / total_epoch) * 100
+
+        self.progress_bar['value'] = cur_prog
+        #self.progress_bar['length'] = total_epoch
 
     def stop_run(self):
         print("STOP IN HERE")
@@ -51,7 +56,7 @@ class TrainingProgressFrame(tk.Frame):
             self.progress_bar = ttk.Progressbar(self,
                 orient='horizontal',
                 mode='determinate',
-                length=300,
+                length=100,
             )
             self.progress_bar.pack()
             self.stop_btn = tk.Button(self,

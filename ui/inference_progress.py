@@ -29,8 +29,10 @@ class InferenceProgressFrame(tk.Frame):
 
     def update_progress(self, cur_epoch, total_epoch):
         self.progress_lbl['text'] = f"Frame {cur_epoch} of {total_epoch}"
-        self.progress_bar['value'] = cur_epoch
-        self.progress_bar['length'] = total_epoch
+        
+        cur_prog = (cur_epoch / total_epoch) * 100
+        self.progress_bar['value'] = cur_prog
+        #self.progress_bar['length'] = total_epoch
 
     def change_state(self, state):
         old_state = self.state
