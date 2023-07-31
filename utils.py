@@ -42,7 +42,7 @@ def save_text(text, path, is_list=False):
         else:
             f.write(text)
 
-def execute_command(cmd_str, process_queue=None):
+def execute_command(cmd_str, process_queue=None, connection=None):
     p = subprocess.Popen(cmd_str, shell=True)
 
     if process_queue is not None:
@@ -58,4 +58,12 @@ def execute_command(cmd_str, process_queue=None):
                 print("Process ended")
                 process_queue.close()
                 return
+
+    if connection is not None:
+        p = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, universal_newlines=True)
+
+        while True:
+            if p.poll(): break
+            line = p.stdout.readline()
+            connection.send(line)
     

@@ -11,7 +11,7 @@ from utils import load_cache, save_cache
 
 INFERENCE_CACHE_NAME = "inference.cache"
 class InferenceFrame(tk.Frame):
-    def __init__(self, root, back_cmd=lambda: None):
+    def __init__(self, root, back_cmd=lambda: None, open_progress_page=lambda: None):
         super().__init__(root)
 
         self.cache = load_cache(INFERENCE_CACHE_NAME)
@@ -24,6 +24,8 @@ class InferenceFrame(tk.Frame):
                 "model" : "",
                 "use_segmentation" : False
             }
+
+        self.open_progress_page = open_progress_page
 
         self.result_name_var = tk.StringVar(value=self.cache["result_name"])
         self.img_size_var = tk.StringVar(value=self.cache["img_size"])
@@ -69,17 +71,10 @@ class InferenceFrame(tk.Frame):
         cmd_str += f" --name {self.result_name_var.get()}"
         cmd_str += f" --img {self.img_size_var.get()} --save-txt"
 
+        save_path = os.path.join(self.save_dir_var.get(), self.result_name_var.get()) # NEED TO CHECK UNIQUE
+
         self.save_cache()
-
-        print(cmd_str)
-
-        p = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, universal_newlines=True)
-
-        while True:
-            if p.poll(): break
-            print(p.stdout.readline())
-        
-        print("DONE")
+        self.open_progress_page(cmd_str, save_path)
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Inference Frame")
