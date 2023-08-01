@@ -7,7 +7,7 @@ from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
-from utils import load_cache, save_cache
+from utils import load_cache, save_cache, VideoScanner
 
 INFERENCE_CACHE_NAME = "inference.cache"
 class InferenceFrame(tk.Frame):
@@ -60,6 +60,17 @@ class InferenceFrame(tk.Frame):
         }
         save_cache(self.cache, INFERENCE_CACHE_NAME)
 
+    def get_source_size(self):
+        path = self.target_path_var.get()
+        ext = os.path.splitext(path)[1].lower()
+        # If is image
+        if ext in [".png", ".jpg"]:
+            size = Image.open(path).size
+            return size
+        elif ext in [".mp4"]: # else is a video
+            scanner = VideoScanner(path)
+            return scanner.get_frame_size()
+
     def run(self):
         script_path = os.path.join(self.master.project_path, "externals", "yolov7", "detect.py")
         if self.use_segmentation_var.get():
@@ -69,7 +80,7 @@ class InferenceFrame(tk.Frame):
         cmd_str += f" --weights {self.model_path_var.get()}"
         cmd_str += f" --project {self.save_dir_var.get()}"
         cmd_str += f" --name {self.result_name_var.get()}"
-        cmd_str += f" --img {self.img_size_var.get()} --save-txt"
+        cmd_str += f" --img {min(self.get_source_size())} --save-txt --no-trace"
 
         save_path = os.path.join(self.save_dir_var.get(), self.result_name_var.get()) # NEED TO CHECK UNIQUE
 

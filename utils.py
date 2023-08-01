@@ -5,7 +5,9 @@ import subprocess
 import tempfile
 
 import json
+import yaml
 
+import cv2
 import torch
 
 def get_available_gpus():
@@ -34,6 +36,10 @@ def save_json(obj, path):
 def load_json(path):
     with open(path, 'r') as f:
         return json.load(f)
+
+def load_yaml(path):
+    with open(path, 'r') as f:
+        return yaml.safe_load(f)
     
 def save_text(text, path, is_list=False):
     with open(path, 'w') as f:
@@ -48,7 +54,6 @@ def execute_command(cmd_str, process_queue=None, connection=None):
     if process_queue is not None:
         while True:
             data = process_queue.get()
-            print(data)
             if data == "STOP" or pipe_conn.closed:
                 # This works on Windows, may need to test on other platforms
                 # See: https://stackoverflow.com/questions/4789837/how-to-terminate-a-python-subprocess-launched-with-shell-true/4791612#4791612
@@ -66,4 +71,13 @@ def execute_command(cmd_str, process_queue=None, connection=None):
             if p.poll(): break
             line = p.stdout.readline()
             connection.send(line)
+
+class VideoScanner:
+    def __init__(self, video_path):
+        self.cap = cv2.VideoCapture(video_path)
+
+    def get_frame_size(self):
+        width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        return (int(width), int(height))
     

@@ -68,9 +68,6 @@ class App(tk.Tk):
 
         while self.process_conn.poll():            
             line = self.process_conn.recv()
-            print("HAVE LINE")
-            print(line)
-            print("HAVE LINE END")
             if 'video' in line:
                 cur, end = line.split()[2].split('/')
                 cur = int(cur[1:])
