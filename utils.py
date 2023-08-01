@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 
 import json
+import yaml
 
 import torch
 
@@ -34,6 +35,10 @@ def save_json(obj, path):
 def load_json(path):
     with open(path, 'r') as f:
         return json.load(f)
+
+def load_yaml(path):
+    with open(path, 'r') as f:
+        return yaml.safe_load(f)
     
 def save_text(text, path, is_list=False):
     with open(path, 'w') as f:
