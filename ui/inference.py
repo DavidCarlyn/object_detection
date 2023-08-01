@@ -19,7 +19,6 @@ class InferenceFrame(tk.Frame):
             self.cache = {
                 "save_dir" : "data/runs/inference",
                 "result_name" : "experiment001",
-                "img_size" : 512,
                 "target" : "",
                 "model" : "",
                 "use_segmentation" : False
@@ -28,7 +27,6 @@ class InferenceFrame(tk.Frame):
         self.open_progress_page = open_progress_page
 
         self.result_name_var = tk.StringVar(value=self.cache["result_name"])
-        self.img_size_var = tk.StringVar(value=self.cache["img_size"])
         self.model_path_var = tk.StringVar(value=self.cache["model"])
         self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
         self.target_path_var = tk.StringVar(value=self.cache["target"])
@@ -53,7 +51,6 @@ class InferenceFrame(tk.Frame):
         self.cache = {
             "save_dir" : self.save_dir_var.get(),
             "result_name" : self.result_name_var.get(),
-            "img_size" : self.img_size_var.get(),
             "target" : self.target_path_var.get(),
             "model" : self.model_path_var.get(),
             "use_segmentation" : self.use_segmentation_var.get()
@@ -140,11 +137,6 @@ class InferenceFrame(tk.Frame):
         result_lbl.pack()
         result_name_entry = tk.Entry(self, textvariable=self.result_name_var)
         result_name_entry.pack()
-        
-        img_size_lbl = tk.Label(self, text="Image Size")
-        img_size_lbl.pack()
-        img_size_entry = tk.Entry(self, textvariable=self.img_size_var)
-        img_size_entry.pack()
 
         seg_chkb = ttk.Checkbutton(self,
             text='Use segmentation',
