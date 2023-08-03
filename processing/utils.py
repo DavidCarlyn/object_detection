@@ -48,6 +48,9 @@ def save_text(text, path, is_list=False):
         else:
             f.write(text)
 
+def call_yolo(yolo_call, process_queue=None):
+    pass
+
 def execute_command(cmd_str, process_queue=None, connection=None):
     print("Executing command:")
     print(cmd_str)

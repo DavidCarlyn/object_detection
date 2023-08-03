@@ -7,7 +7,7 @@ from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
-from utils import load_cache, save_cache, VideoScanner
+from processing.utils import load_cache, save_cache, VideoScanner
 
 INFERENCE_CACHE_NAME = "inference.cache"
 class InferenceFrame(tk.Frame):

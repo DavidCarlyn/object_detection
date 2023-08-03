@@ -10,7 +10,7 @@ from ui.training import TrainingFrame
 from ui.training_progress import TrainingProgressFrame
 from ui.inference_progress import InferenceProgressFrame
 
-from utils import execute_command
+from processing.utils import execute_command
 
 """
 Main class for training and using the YOLOv7 model
@@ -76,14 +76,14 @@ class App(tk.Tk):
 
         self.after(1000, self.update_infer_window, save_path, frame)
         
-    def build_train_progress_window(self, cmd_str, save_path):
+    def build_train_progress_window(self, yolo_call_obj, save_path):
         self.clear_window()
         frame = TrainingProgressFrame(self, back_cmd=self.build_train_window, stop_thread_cmd=self.stop_thread)
         frame.pack()
         frame.start_training()
 
         self.process_queue = mp.Queue()
-        self.run_thread = mp.Process(target=execute_command, args=(cmd_str, self.process_queue))
+        self.run_thread = mp.Process(target=yolo_call_obj.call)
         self.run_thread.start()
 
         self.update_train_window(save_path, frame)
