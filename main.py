@@ -38,9 +38,8 @@ class App(tk.Tk):
     def stop_thread(self):
         if self.run_thread is not None:
             print("stop start")
-            self.process_queue.put("STOP")
-            self.run_thread.join()
             self.run_thread.terminate()
+            self.run_thread.join()
 
     def update_train_window(self, save_path, frame):
         if frame.is_training_ended():
@@ -82,20 +81,19 @@ class App(tk.Tk):
         frame.pack()
         frame.start_training()
 
-        self.process_queue = mp.Queue()
         self.run_thread = mp.Process(target=yolo_call_obj.call)
         self.run_thread.start()
 
         self.update_train_window(save_path, frame)
     
-    def build_infer_progress_window(self, cmd_str, save_path):
+    def build_infer_progress_window(self, yolo_call_obj, save_path):
         self.clear_window()
         frame = InferenceProgressFrame(self, back_cmd=self.build_infer_window)
         frame.pack()
         frame.start_inference()
 
         self.process_conn, child_conn = mp.Pipe(duplex=True)
-        self.run_thread = mp.Process(target=execute_command, args=(cmd_str, None, child_conn))
+        self.run_thread = mp.Process(target=yolo_call_obj.call, args=(child_conn, ))
         self.run_thread.start()
 
         self.update_infer_window(save_path, frame)

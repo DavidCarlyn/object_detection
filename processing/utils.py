@@ -1,4 +1,5 @@
 import os
+import io
 import signal
 import sys
 import subprocess
@@ -48,9 +49,6 @@ def save_text(text, path, is_list=False):
         else:
             f.write(text)
 
-def call_yolo(yolo_call, process_queue=None):
-    pass
-
 def execute_command(cmd_str, process_queue=None, connection=None):
     print("Executing command:")
     print(cmd_str)
@@ -86,4 +84,13 @@ class VideoScanner:
         width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         return (int(width), int(height))
+
+class PipeFile(io.RawIOBase):
+    def __init__(self, conn):
+        super().__init__()
+        self.conn = conn
+
+    def write(self, b):
+        self.conn.send(b)
+
     
