@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import tkinter as tk
+import customtkinter as ctk
 from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
@@ -55,12 +56,10 @@ class InferenceFrame(tk.Frame):
         )
         back_btn.pack()
 
-        model_btn = tk.Button(self,
+        model_btn = ctk.CTkButton(self,
             text="Load Model",
             width=20,
             height=3,
-            bg="lightgrey",
-            fg="black",
             command=self.open_model_file
         )
         model_btn.pack()
@@ -68,25 +67,22 @@ class InferenceFrame(tk.Frame):
         model_path_entry = tk.Entry(self, textvariable=self.model_path_var, state="disabled")
         model_path_entry.pack()
 
-        load_img_btn = tk.Button(self,
+        load_img_btn = ctk.CTkButton(self,
             text="Load Image/Video",
             width=20,
             height=3,
-            bg="lightgrey",
-            fg="black",
             command=self.open_img_file
         )
         load_img_btn.pack()
+        
 
         target_path_entry = tk.Entry(self, textvariable=self.target_path_var, state="disabled")
         target_path_entry.pack()
 
-        save_dir_btn = tk.Button(self,
+        save_dir_btn = ctk.CTkButton(self,
             text="Save Directory",
             width=20,
             height=3,
-            bg="lightgrey",
-            fg="black",
             command=self.open_save_dir
         )
         save_dir_btn.pack()
@@ -94,22 +90,20 @@ class InferenceFrame(tk.Frame):
         save_dir_entry = tk.Entry(self, textvariable=self.save_dir_var, state="disabled")
         save_dir_entry.pack()
 
-        result_lbl = tk.Label(self, text="Result Name")
+        result_lbl = ctk.CTkLabel(self, text="Result Name")
         result_lbl.pack()
         result_name_entry = tk.Entry(self, textvariable=self.result_name_var)
         result_name_entry.pack()
         
-        img_size_lbl = tk.Label(self, text="Image Size")
+        img_size_lbl = ctk.CTkLabel(self, text="Image Size")
         img_size_lbl.pack()
         img_size_entry = tk.Entry(self, textvariable=self.img_size_var)
         img_size_entry.pack()
 
-        run_btn = tk.Button(self,
+        run_btn = ctk.CTkButton(self,
             text="Run",
             width=50,
             height=10,
-            bg="red",
-            fg="white",
             command=self.run
         )
         run_btn.pack()

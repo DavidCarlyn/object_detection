@@ -1,17 +1,19 @@
 import os
 
 import tkinter as tk
+import customtkinter as ctk
 from ui.home import HomeFrame
 from ui.inference import InferenceFrame
 from ui.training import TrainingFrame
 
-class App(tk.Tk):
+ctk.set_appearance_mode("dark")
+
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Rust Detector Management")
         self.geometry('500x500')
         self.project_path = os.path.dirname(os.path.abspath(__file__))
-        
         self.build_home_window()
 
     def clear_window(self):
@@ -23,7 +25,6 @@ class App(tk.Tk):
         frame = TrainingFrame(self, back_cmd=self.build_home_window)
         frame.pack()
 
-    
     def build_infer_window(self):
         self.clear_window()
         frame = InferenceFrame(self, back_cmd=self.build_home_window)
