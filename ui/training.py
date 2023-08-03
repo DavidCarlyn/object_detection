@@ -97,6 +97,7 @@ class TrainingFrame(tk.Frame):
         data_file = load_yaml(os.path.join(self.data_file_var.get()))
 
         ex_path = None
+        print(data_file['train'])
         for root, dirs, files in os.walk(data_file['train']):
             for f in files:
                 if os.path.splitext(f)[1].lower() in [".png", ".jpg"]:
@@ -139,6 +140,7 @@ class TrainingFrame(tk.Frame):
         cmd_str += f" --hyp {self.training_config_var.get()}"
 
         self.save_cache()
+        print(cmd_str)
         self.open_progress_page(cmd_str, save_path)
 
     def build(self, back_cmd=lambda: None):

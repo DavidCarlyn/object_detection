@@ -49,11 +49,14 @@ def save_text(text, path, is_list=False):
             f.write(text)
 
 def execute_command(cmd_str, process_queue=None, connection=None):
+    print("Executing command:")
+    print(cmd_str)
     p = subprocess.Popen(cmd_str, shell=True)
 
     if process_queue is not None:
         while True:
             data = process_queue.get()
+            print(data)
             if data == "STOP" or pipe_conn.closed:
                 # This works on Windows, may need to test on other platforms
                 # See: https://stackoverflow.com/questions/4789837/how-to-terminate-a-python-subprocess-launched-with-shell-true/4791612#4791612

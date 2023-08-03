@@ -118,6 +118,9 @@ class App(tk.Tk):
 
 
 if __name__ == "__main__":
+    mp.freeze_support()
+    print("Loading Object Detection Application.")
+    print("This may take a minute...")
     app = App()
     app.mainloop()
     if app.run_thread is not None:
