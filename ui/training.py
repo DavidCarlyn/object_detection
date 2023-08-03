@@ -10,7 +10,8 @@ from PIL import Image
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
-from utils import load_cache, save_cache, get_available_gpus, is_on_windows, load_yaml
+from processing.utils import load_cache, save_cache, get_available_gpus, is_on_windows, load_yaml
+from processing.yolo_api import YOLO_Call
 
 TRAINING_CACHE_NAME = "training.cache"
 class TrainingFrame(tk.Frame):
@@ -117,31 +118,28 @@ class TrainingFrame(tk.Frame):
             self.add_exists_error(save_path)
             return
 
-        script_path = os.path.join(self.master.project_path, "externals", "yolov7", "train.py")
-        if self.use_segmentation_var.get():
-            script_path = os.path.join(self.master.project_path, "externals", "yolov7_seg", "seg", "segment", "train.py")
-
         devices = "-1"
         if self.use_gpu_var.get():
             devices = ",".join(get_available_gpus())
-        if is_on_windows():
-            cmd_str = f"set CUDA_VISIBLE_DEVICES={devices} & "
-        else:
-            cmd_str = f"CUDA_VISIBLE_DEVICES={devices} "
-        
-        cmd_str += f"python {script_path} --workers {self.workers_var.get()} --batch-size {self.batch_size_var.get()}" 
-        cmd_str += f" --img {min(self.get_image_size())}"
-        cmd_str += f" --epochs {self.epochs_var.get()}"
-        cmd_str += f" --project {self.save_dir_var.get()}"
-        cmd_str += f" --name {self.result_name_var.get()}"
-        cmd_str += f" --data {self.data_file_var.get()}"
-        cmd_str += f" --cfg {self.model_config.get()}"
-        cmd_str += f" --weights {self.model_var.get()}"
-        cmd_str += f" --hyp {self.training_config_var.get()}"
+
+        yolo_call = YOLO_Call(
+            seg=self.use_segmentation_var.get(),
+            train=True,
+            devices=devices,
+            workers=self.workers_var.get(),
+            batch_size=self.batch_size_var.get(),
+            img=min(self.get_image_size()),
+            epochs=self.epochs_var.get(),
+            project=self.save_dir_var.get(),
+            name=self.result_name_var.get(),
+            data=self.data_file_var.get(),
+            cfg=self.model_config.get(),
+            weights=self.model_var.get(),
+            hyp=self.training_config_var.get()
+        )
 
         self.save_cache()
-        print(cmd_str)
-        self.open_progress_page(cmd_str, save_path)
+        self.open_progress_page(yolo_call, save_path)
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Training Frame")

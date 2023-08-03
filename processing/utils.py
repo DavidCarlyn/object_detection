@@ -1,4 +1,5 @@
 import os
+import io
 import signal
 import sys
 import subprocess
@@ -83,4 +84,13 @@ class VideoScanner:
         width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         return (int(width), int(height))
+
+class PipeFile(io.RawIOBase):
+    def __init__(self, conn):
+        super().__init__()
+        self.conn = conn
+
+    def write(self, b):
+        self.conn.send(b)
+
     

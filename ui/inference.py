@@ -7,7 +7,8 @@ from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
-from utils import load_cache, save_cache, VideoScanner
+from processing.utils import load_cache, save_cache, VideoScanner
+from processing.yolo_api import YOLO_Call
 
 INFERENCE_CACHE_NAME = "inference.cache"
 class InferenceFrame(tk.Frame):
@@ -69,20 +70,23 @@ class InferenceFrame(tk.Frame):
             return scanner.get_frame_size()
 
     def run(self):
-        script_path = os.path.join(self.master.project_path, "externals", "yolov7", "detect.py")
-        if self.use_segmentation_var.get():
-            script_path = os.path.join(self.master.project_path, "externals", "yolov7_seg", "seg", "segment", "predict.py")
-
-        cmd_str = f"python {script_path} --source {self.target_path_var.get()}" 
-        cmd_str += f" --weights {self.model_path_var.get()}"
-        cmd_str += f" --project {self.save_dir_var.get()}"
-        cmd_str += f" --name {self.result_name_var.get()}"
-        cmd_str += f" --img {min(self.get_source_size())} --save-txt --no-trace"
-
         save_path = os.path.join(self.save_dir_var.get(), self.result_name_var.get()) # NEED TO CHECK UNIQUE
 
+        yolo_call = YOLO_Call(
+            seg=self.use_segmentation_var.get(),
+            train=False,
+            devices=-1, # Need to be more flexible here
+            weights=self.model_path_var.get(),
+            project=self.save_dir_var.get(),
+            name=self.result_name_var.get(),
+            source=self.target_path_var.get(),
+            img=min(self.get_source_size()),
+            save_txt=True,
+            no_trace=True      
+        )
+
         self.save_cache()
-        self.open_progress_page(cmd_str, save_path)
+        self.open_progress_page(yolo_call, save_path)
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Inference Frame")
