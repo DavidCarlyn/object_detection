@@ -3,30 +3,58 @@ import subprocess
 
 import tkinter as tk
 import customtkinter as ctk
+from tkinter import ttk
 
 from tkinter.filedialog import askopenfile, askdirectory
 
+from PIL import Image
+
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
+from processing.utils import load_cache, save_cache, get_available_gpus, is_on_windows, load_yaml
+from processing.yolo_api import YOLO_Call
 
+TRAINING_CACHE_NAME = "training.cache"
 class TrainingFrame(tk.Frame):
-    def __init__(self, root, back_cmd=lambda: None):
+    def __init__(self, root, back_cmd=lambda: None, open_progress_page=lambda: None):
         super().__init__(root)
 
-        self.save_dir_var = tk.StringVar(value="data/runs/inference")
-        self.result_name_var = tk.StringVar(value="experiment001")
+        self.cache = load_cache(TRAINING_CACHE_NAME)
+        if self.cache is None:
+            self.cache = {
+                "save_dir" : "data/runs/training",
+                "result_name" : "experiment001",
+                "epochs" : 300,
+                "workers" : 2,
+                "batch_size" : 2,
+                "data_file" : "",
+                "model_config" : "",
+                "model" : "",
+                "training_config" : "",
+                "use_gpu" : False,
+                "use_segmentation" : False
+            }
 
-        #change this!
-        self.img_size_var = tk.IntVar(value=256)
+        self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
+        self.result_name_var = tk.StringVar(value=self.cache["result_name"])
 
+        self.epochs_var = tk.IntVar(value=self.cache["epochs"])
+        self.workers_var = tk.IntVar(value=self.cache["workers"])
+        self.batch_size_var = tk.IntVar(value=self.cache["batch_size"])
+
+        self.data_file_var = tk.StringVar(value=self.cache["data_file"])
+        self.model_config = tk.StringVar(value=self.cache["model_config"])
+        self.model_var = tk.StringVar(value=self.cache["model"])
+        self.training_config_var = tk.StringVar(value=self.cache["training_config"])
+
+        self.use_gpu_var = tk.BooleanVar(value=self.cache["use_gpu"])
+        self.use_segmentation_var = tk.BooleanVar(value=self.cache["use_segmentation"])
 
         self.workers_var = tk.IntVar(value=8)
         self.batch_size_var = tk.IntVar(value=4)
+        self.error_lbl = None
 
-        self.data_file_var = tk.StringVar(value="")
-        self.model_config = tk.StringVar(value="")
-        self.model_var = tk.StringVar(value="")
-        self.training_config_var = tk.StringVar(value="")
+        self.open_progress_page = open_progress_page
 
         self.build(back_cmd)
 
@@ -36,30 +64,85 @@ class TrainingFrame(tk.Frame):
 
     def open_model_file(self):
         file = askopenfile(mode ='r', filetypes =[('Model Files', '*.pt')])
-        self.model_path_var.set(file.name)
+        self.model_var.set(file.name)
     
     def open_yaml_file(self, ent_var):
         file = askopenfile(mode ='r', filetypes =[('YAML Files', '*.yaml'), ('YAML Files', '*.yml')])
         ent_var.set(file.name)
 
+    def save_cache(self):
+        self.cache = {
+            "save_dir" : self.save_dir_var.get(),
+            "result_name" : self.result_name_var.get(),
+            "epochs" : self.epochs_var.get(),
+            "workers" : self.workers_var.get(),
+            "batch_size" : self.batch_size_var.get(),
+            "data_file" : self.data_file_var.get(),
+            "model_config" : self.model_config.get(),
+            "model" : self.model_var.get(),
+            "training_config" : self.training_config_var.get(),
+            "use_gpu" : self.use_gpu_var.get(),
+            "use_segmentation" : self.use_segmentation_var.get()
+        }
+        save_cache(self.cache, TRAINING_CACHE_NAME)
+
+    def add_exists_error(self, path):
+        if self.error_lbl is not None:
+            return
+        
+        self.error_lbl = tk.Label(self,
+            text=f"ERROR: {path} already exists. Please choose a different 'Result Name' or 'Save Directory'.",
+            bg="yellow",
+            fg="red"
+        )
+        self.error_lbl.pack()
+
+    def get_image_size(self):
+        data_file = load_yaml(os.path.join(self.data_file_var.get()))
+
+        ex_path = None
+        print(data_file['train'])
+        for root, dirs, files in os.walk(data_file['train']):
+            for f in files:
+                if os.path.splitext(f)[1].lower() in [".png", ".jpg"]:
+                    ex_path = os.path.join(root, f)
+                    break
+            if ex_path is not None: break
+        if ex_path is None:
+            return None
+        
+        size = Image.open(ex_path).size
+        return size
+
+
     def run(self):
-        script_path = os.path.join(self.master.project_path, "externals", "yolov7", "train.py")
-        cmd_str = f"python {script_path} --workers {self.workers_var.get()} --batch-size {self.batch_size_var.get()}" 
-        cmd_str += f" --img {self.img_size_var.get()}"
-        print("\n\n IMAGESIZE !!!! \n\n",self.img_size_var.get())
-        cmd_str += f" --project {self.save_dir_var.get()}"
-        cmd_str += f" --name {self.result_name_var.get()}"
-        cmd_str += f" --data {self.data_file_var.get()}"
-        cmd_str += f" --cfg {self.model_config.get()}"
-        cmd_str += f" --weights {self.model_var.get()}"
-        cmd_str += f" --hyp {self.training_config_var.get()}"
+        save_path = os.path.join(self.save_dir_var.get(), self.result_name_var.get())
+        if os.path.exists(save_path):
+            self.add_exists_error(save_path)
+            return
 
-        print(cmd_str)
+        devices = "-1"
+        if self.use_gpu_var.get():
+            devices = ",".join(get_available_gpus())
 
-        stdout = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE).stdout
+        yolo_call = YOLO_Call(
+            seg=self.use_segmentation_var.get(),
+            train=True,
+            devices=devices,
+            workers=self.workers_var.get(),
+            batch_size=self.batch_size_var.get(),
+            img=min(self.get_image_size()),
+            epochs=self.epochs_var.get(),
+            project=self.save_dir_var.get(),
+            name=self.result_name_var.get(),
+            data=self.data_file_var.get(),
+            cfg=self.model_config.get(),
+            weights=self.model_var.get(),
+            hyp=self.training_config_var.get()
+        )
 
-        print(stdout.read())
-        print("DONE")
+        self.save_cache()
+        self.open_progress_page(yolo_call, save_path)
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Training Frame")
@@ -96,11 +179,27 @@ class TrainingFrame(tk.Frame):
         batch_size_lbl.pack()
         batch_size_entry = tk.Entry(self, textvariable=self.batch_size_var)
         batch_size_entry.pack()
+        
+        epochs_lbl = tk.Label(self, text="Number of Epochs")
+        epochs_lbl.pack()
+        epochs_entry = tk.Entry(self, textvariable=self.epochs_var)
+        epochs_entry.pack()
 
-        img_size_lbl = ctk.CTkLabel(self, text="Image size")
-        img_size_lbl.pack()
-        img_size_entry = tk.Entry(self, textvariable=self.img_size_var)
-        img_size_entry.pack()
+        gpu_chkb = ttk.Checkbutton(self,
+            text='Use GPUs',
+            variable=self.use_gpu_var,
+            onvalue=True,
+            offvalue=False
+        )
+        gpu_chkb.pack()
+        
+        seg_chkb = ttk.Checkbutton(self,
+            text='Train segmentation',
+            variable=self.use_segmentation_var,
+            onvalue=True,
+            offvalue=False
+        )
+        seg_chkb.pack()
 
         data_file_btn = ctk.CTkButton(self,
             text="Data file",
@@ -128,7 +227,9 @@ class TrainingFrame(tk.Frame):
             text="Model Weights File",
             width=20,
             height=3,
-            command=lambda: self.open_yaml_file(self.model_var)
+            bg="lightgrey",
+            fg="black",
+            command=lambda: self.open_model_file()
         )
         model_weights_file_btn.pack()
 

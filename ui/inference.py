@@ -3,19 +3,37 @@ import subprocess
 
 import tkinter as tk
 import customtkinter as ctk
+from tkinter import ttk
 from tkinter.filedialog import askopenfile, askdirectory
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
+from processing.utils import load_cache, save_cache, VideoScanner
+from processing.yolo_api import YOLO_Call
 
+INFERENCE_CACHE_NAME = "inference.cache"
 class InferenceFrame(tk.Frame):
-    def __init__(self, root, back_cmd=lambda: None):
+    def __init__(self, root, back_cmd=lambda: None, open_progress_page=lambda: None):
         super().__init__(root)
-        self.result_name_var = tk.StringVar(value="experiment001")
-        self.img_size_var = tk.StringVar(value="256")
-        self.model_path_var = tk.StringVar(value="")
-        self.save_dir_var = tk.StringVar(value="data/runs/inference")
-        self.target_path_var = tk.StringVar(value="")
+
+        self.cache = load_cache(INFERENCE_CACHE_NAME)
+        if self.cache is None:
+            self.cache = {
+                "save_dir" : "data/runs/inference",
+                "result_name" : "experiment001",
+                "target" : "",
+                "model" : "",
+                "use_segmentation" : False
+            }
+
+        self.open_progress_page = open_progress_page
+
+        self.result_name_var = tk.StringVar(value=self.cache["result_name"])
+        self.model_path_var = tk.StringVar(value=self.cache["model"])
+        self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
+        self.target_path_var = tk.StringVar(value=self.cache["target"])
+
+        self.use_segmentation_var = tk.BooleanVar(value=self.cache["use_segmentation"])
 
         self.build(back_cmd)
 
@@ -31,20 +49,45 @@ class InferenceFrame(tk.Frame):
         dir_path = askdirectory()
         self.save_dir_var.set(dir_path)
 
+    def save_cache(self):
+        self.cache = {
+            "save_dir" : self.save_dir_var.get(),
+            "result_name" : self.result_name_var.get(),
+            "target" : self.target_path_var.get(),
+            "model" : self.model_path_var.get(),
+            "use_segmentation" : self.use_segmentation_var.get()
+        }
+        save_cache(self.cache, INFERENCE_CACHE_NAME)
+
+    def get_source_size(self):
+        path = self.target_path_var.get()
+        ext = os.path.splitext(path)[1].lower()
+        # If is image
+        if ext in [".png", ".jpg"]:
+            size = Image.open(path).size
+            return size
+        elif ext in [".mp4"]: # else is a video
+            scanner = VideoScanner(path)
+            return scanner.get_frame_size()
+
     def run(self):
-        script_path = os.path.join(self.master.project_path, "externals", "yolov7", "detect.py")
-        cmd_str = f"python {script_path} --source {self.target_path_var.get()}" 
-        cmd_str += f" --weights {self.model_path_var.get()}"
-        cmd_str += f" --project {self.save_dir_var.get()}"
-        cmd_str += f" --name {self.result_name_var.get()}"
-        cmd_str += f" --img {self.img_size_var.get()} --save-txt"
+        save_path = os.path.join(self.save_dir_var.get(), self.result_name_var.get()) # NEED TO CHECK UNIQUE
 
-        print(cmd_str)
+        yolo_call = YOLO_Call(
+            seg=self.use_segmentation_var.get(),
+            train=False,
+            devices=-1, # Need to be more flexible here
+            weights=self.model_path_var.get(),
+            project=self.save_dir_var.get(),
+            name=self.result_name_var.get(),
+            source=self.target_path_var.get(),
+            img=min(self.get_source_size()),
+            save_txt=True,
+            no_trace=True      
+        )
 
-        stdout = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE).stdout
-
-        print(stdout.read())
-        print("DONE")
+        self.save_cache()
+        self.open_progress_page(yolo_call, save_path)
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Inference Frame")
@@ -94,11 +137,14 @@ class InferenceFrame(tk.Frame):
         result_lbl.pack()
         result_name_entry = tk.Entry(self, textvariable=self.result_name_var)
         result_name_entry.pack()
-        
-        img_size_lbl = ctk.CTkLabel(self, text="Image Size")
-        img_size_lbl.pack()
-        img_size_entry = tk.Entry(self, textvariable=self.img_size_var)
-        img_size_entry.pack()
+
+        seg_chkb = ttk.Checkbutton(self,
+            text='Use segmentation',
+            variable=self.use_segmentation_var,
+            onvalue=True,
+            offvalue=False
+        )
+        seg_chkb.pack()
 
         run_btn = ctk.CTkButton(self,
             text="Run",
