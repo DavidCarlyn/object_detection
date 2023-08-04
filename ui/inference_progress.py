@@ -2,6 +2,7 @@ from enum import Enum
 
 import tkinter as tk
 from tkinter import ttk
+import customtkinter as ctk
 
 from tkinter.filedialog import askopenfile, askdirectory
 
@@ -13,7 +14,7 @@ class InferenceState(Enum):
     INFERRING = 1,
     COMPLETED = 2
     
-class InferenceProgressFrame(tk.Frame):
+class InferenceProgressFrame(ctk.CTkFrame):
     def __init__(self, root, back_cmd=lambda: None):
         super().__init__(root)
 

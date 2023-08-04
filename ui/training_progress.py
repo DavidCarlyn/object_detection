@@ -2,6 +2,7 @@ from enum import Enum
 
 import tkinter as tk
 from tkinter import ttk
+import customtkinter as ctk
 
 from tkinter.filedialog import askopenfile, askdirectory
 
@@ -14,7 +15,7 @@ class TrainingState(Enum):
     COMPLETED = 2,
     CANCELLED = 3
     
-class TrainingProgressFrame(tk.Frame):
+class TrainingProgressFrame(ctk.CTkFrame):
     def __init__(self, root, back_cmd=lambda: None, stop_thread_cmd=lambda: None):
         super().__init__(root)
 
