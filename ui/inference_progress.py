@@ -45,13 +45,13 @@ class InferenceProgressFrame(ctk.CTkFrame):
             self.progress_lbl = tk.Label(self,
                 text="Starting up the inference."
             )
-            self.progress_lbl.pack()
+            self.progress_lbl.pack(pady=4)
             self.progress_bar = ttk.Progressbar(self,
                 orient='horizontal',
                 mode='determinate',
                 length=300,
             )
-            self.progress_bar.pack()
+            self.progress_bar.pack(pady=8)
             self.back_btn["state"] = "disabled"
         elif state == InferenceState.COMPLETED:
             end_lbl = HeaderLabel(self, text="Inference Completed!")
@@ -66,4 +66,4 @@ class InferenceProgressFrame(ctk.CTkFrame):
             text="Inference Configuration Page",
             command=back_cmd
         )
-        self.back_btn.pack()
+        self.back_btn.pack(pady=4)

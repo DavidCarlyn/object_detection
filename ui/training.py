@@ -163,27 +163,27 @@ class TrainingFrame(ctk.CTkFrame):
         save_dir_btn.pack()
 
         save_dir_entry = tk.Entry(self, textvariable=self.save_dir_var, state="disabled")
-        save_dir_entry.pack()
+        save_dir_entry.pack(pady=4)
 
         result_lbl = ctk.CTkLabel(self, text="Result Name")
-        result_lbl.pack()
+        result_lbl.pack(pady=4)
         result_name_entry = tk.Entry(self, textvariable=self.result_name_var)
-        result_name_entry.pack()
+        result_name_entry.pack(pady=4)
 
         worker_lbl = ctk.CTkLabel(self, text="Number of workers")
-        worker_lbl.pack()
+        worker_lbl.pack(pady=4)
         worker_entry = tk.Entry(self, textvariable=self.workers_var)
-        worker_entry.pack()
+        worker_entry.pack(pady=4)
         
         batch_size_lbl = ctk.CTkLabel(self, text="Batch size")
-        batch_size_lbl.pack()
+        batch_size_lbl.pack(pady=4)
         batch_size_entry = tk.Entry(self, textvariable=self.batch_size_var)
-        batch_size_entry.pack()
+        batch_size_entry.pack(pady=4)
         
         epochs_lbl = tk.Label(self, text="Number of Epochs")
-        epochs_lbl.pack()
+        epochs_lbl.pack(pady=4)
         epochs_entry = tk.Entry(self, textvariable=self.epochs_var)
-        epochs_entry.pack()
+        epochs_entry.pack(pady=4)
 
         gpu_chkb = ttk.Checkbutton(self,
             text='Use GPUs',
@@ -191,7 +191,7 @@ class TrainingFrame(ctk.CTkFrame):
             onvalue=True,
             offvalue=False
         )
-        gpu_chkb.pack()
+        gpu_chkb.pack(pady=4)
         
         seg_chkb = ttk.Checkbutton(self,
             text='Train segmentation',
@@ -199,7 +199,7 @@ class TrainingFrame(ctk.CTkFrame):
             onvalue=True,
             offvalue=False
         )
-        seg_chkb.pack()
+        seg_chkb.pack(pady=4)
 
         data_file_btn = ctk.CTkButton(self,
             text="Data file",
@@ -207,10 +207,10 @@ class TrainingFrame(ctk.CTkFrame):
             height=3,
             command=lambda: self.open_yaml_file(self.data_file_var)
         )
-        data_file_btn.pack()
+        data_file_btn.pack(pady=4)
 
         data_file_entry = tk.Entry(self, textvariable=self.data_file_var, state="disabled")
-        data_file_entry.pack()
+        data_file_entry.pack(pady=4)
         
         model_config_file_btn = ctk.CTkButton(self,
             text="Model Configuration File",
@@ -218,10 +218,10 @@ class TrainingFrame(ctk.CTkFrame):
             height=3,
             command=lambda: self.open_yaml_file(self.model_config)
         )
-        model_config_file_btn.pack()
+        model_config_file_btn.pack(pady=4)
 
         model_config_file_entry = tk.Entry(self, textvariable=self.model_config, state="disabled")
-        model_config_file_entry.pack()
+        model_config_file_entry.pack(pady=4)
         
         model_weights_file_btn = ctk.CTkButton(self,
             text="Model Weights File",
@@ -229,10 +229,10 @@ class TrainingFrame(ctk.CTkFrame):
             height=3,
             command=lambda: self.open_model_file()
         )
-        model_weights_file_btn.pack()
+        model_weights_file_btn.pack(pady=4)
 
         model_weights_file_entry = tk.Entry(self, textvariable=self.model_var, state="disabled")
-        model_weights_file_entry.pack()
+        model_weights_file_entry.pack(pady=4)
         
         training_file_btn = ctk.CTkButton(self,
             text="Training Configuration File",
@@ -240,16 +240,17 @@ class TrainingFrame(ctk.CTkFrame):
             height=3,
             command=lambda: self.open_yaml_file(self.training_config_var)
         )
-        training_file_btn.pack()
+        training_file_btn.pack(pady=4)
 
         training_file_entry = tk.Entry(self, textvariable=self.training_config_var, state="disabled")
-        training_file_entry.pack()
+        training_file_entry.pack(pady=4)
         
         run_btn = ctk.CTkButton(self,
             text="Run",
             width=50,
             height=10,
-            command=self.run
+            command=self.run,
+            fg_color="red"
         )
-        run_btn.pack()
+        run_btn.pack(pady=4)
 
