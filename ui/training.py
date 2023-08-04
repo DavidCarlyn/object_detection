@@ -15,7 +15,7 @@ from processing.utils import load_cache, save_cache, get_available_gpus, is_on_w
 from processing.yolo_api import YOLO_Call
 
 TRAINING_CACHE_NAME = "training.cache"
-class TrainingFrame(tk.Frame):
+class TrainingFrame(ctk.CTkFrame):
     def __init__(self, root, back_cmd=lambda: None, open_progress_page=lambda: None):
         super().__init__(root)
 

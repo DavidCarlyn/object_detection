@@ -12,7 +12,7 @@ from processing.utils import load_cache, save_cache, VideoScanner
 from processing.yolo_api import YOLO_Call
 
 INFERENCE_CACHE_NAME = "inference.cache"
-class InferenceFrame(tk.Frame):
+class InferenceFrame(ctk.CTkFrame):
     def __init__(self, root, back_cmd=lambda: None, open_progress_page=lambda: None):
         super().__init__(root)
 
