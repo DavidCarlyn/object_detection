@@ -24,25 +24,26 @@ class YOLO_Call:
         if conn is not None:
             cur_std_out = PipeFile(conn)
 
+        cwd = os.getcwd()
+        import importlib
+        ex = importlib.import_module("externals")
+        detect_path = os.path.join(ex.__path__[0], "yolov7")
+        seg_path = os.path.join(ex.__path__[0], "yolov7_seg")
         with cur_std_out as sys.stdout:
             if not self.seg:
-                cwd = os.getcwd()
-                sys.path.insert(0, "./externals/yolov7")
-                #sys.path.remove(cwd)
+                sys.path.insert(0, detect_path)
                 if self.train:
                     yolov7_train_main(**self.kwargs)
                 else:
                     yolov7_detect_main(**self.kwargs)
-                sys.path.remove("./externals/yolov7")
+                sys.path.remove(detect_path)
             else:
-                cwd = os.getcwd()
-                sys.path.insert(0, "./externals/yolov7_seg/")
-                #sys.path.remove(cwd)
+                sys.path.insert(0, seg_path)
                 if self.train:
                     yolov7_train_seg_main(**self.kwargs)
                 else:
                     yolov7_seg_predict_main(**self.kwargs)
-                sys.path.remove("./externals/yolov7_seg")
+                sys.path.remove(seg_path)
 
 def yolov7_train_seg_main(**kwargs):
     from seg.segment.train import run
