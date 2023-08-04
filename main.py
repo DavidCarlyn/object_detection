@@ -3,6 +3,7 @@ import multiprocessing as mp
 import threading
 
 import tkinter as tk
+import customtkinter as ctk
 
 from ui.home import HomeFrame
 from ui.inference import InferenceFrame
@@ -12,10 +13,12 @@ from ui.inference_progress import InferenceProgressFrame
 
 from processing.utils import execute_command
 
+ctk.set_appearance_mode("dark")
+
 """
 Main class for training and using the YOLOv7 model
 """
-class App(tk.Tk):
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Rust Detector Management")
