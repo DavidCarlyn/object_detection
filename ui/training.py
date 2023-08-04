@@ -227,8 +227,6 @@ class TrainingFrame(tk.Frame):
             text="Model Weights File",
             width=20,
             height=3,
-            bg="lightgrey",
-            fg="black",
             command=lambda: self.open_model_file()
         )
         model_weights_file_btn.pack()
