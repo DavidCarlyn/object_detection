@@ -62,8 +62,6 @@ class TrainingProgressFrame(tk.Frame):
                 text="Stop",
                 width=20,
                 height=3,
-                bg="red",
-                fg="white",
                 command=lambda: self.stop_run()
             )
             self.stop_btn.pack()

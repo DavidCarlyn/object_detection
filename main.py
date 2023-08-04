@@ -22,7 +22,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Rust Detector Management")
-        self.geometry('')
+        #self.geometry('')
         self.project_path = os.path.dirname(os.path.abspath(__file__))
         self.run_thread = None
         self.last_result = None
