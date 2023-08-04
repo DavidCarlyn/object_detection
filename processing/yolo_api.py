@@ -33,6 +33,7 @@ class YOLO_Call:
             if not self.seg:
                 sys.path.insert(0, detect_path)
                 if self.train:
+                    importlib
                     yolov7_train_main(**self.kwargs)
                 else:
                     yolov7_detect_main(**self.kwargs)
@@ -75,7 +76,7 @@ def yolov7_train_main(**kwargs):
     from torch.utils.tensorboard import SummaryWriter
     from tqdm import tqdm
 
-    import test  # import test.py to get mAP after each epoch
+    from externals.yolov7 import test  # import test.py to get mAP after each epoch
     from models.experimental import attempt_load
     from models.yolo import Model
     from utils.autoanchor import check_anchors
