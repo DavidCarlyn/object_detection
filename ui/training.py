@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk
 
 from tkinter.filedialog import askopenfile, askdirectory
@@ -49,6 +50,8 @@ class TrainingFrame(tk.Frame):
         self.use_gpu_var = tk.BooleanVar(value=self.cache["use_gpu"])
         self.use_segmentation_var = tk.BooleanVar(value=self.cache["use_segmentation"])
 
+        self.workers_var = tk.IntVar(value=8)
+        self.batch_size_var = tk.IntVar(value=4)
         self.error_lbl = None
 
         self.open_progress_page = open_progress_page
@@ -151,12 +154,10 @@ class TrainingFrame(tk.Frame):
         )
         back_btn.pack()
 
-        save_dir_btn = tk.Button(self,
+        save_dir_btn = ctk.CTkButton(self,
             text="Save Directory",
             width=20,
             height=3,
-            bg="lightgrey",
-            fg="black",
             command=self.open_save_dir
         )
         save_dir_btn.pack()
@@ -164,17 +165,17 @@ class TrainingFrame(tk.Frame):
         save_dir_entry = tk.Entry(self, textvariable=self.save_dir_var, state="disabled")
         save_dir_entry.pack()
 
-        result_lbl = tk.Label(self, text="Result Name")
+        result_lbl = ctk.CTkLabel(self, text="Result Name")
         result_lbl.pack()
         result_name_entry = tk.Entry(self, textvariable=self.result_name_var)
         result_name_entry.pack()
 
-        worker_lbl = tk.Label(self, text="Number of workers")
+        worker_lbl = ctk.CTkLabel(self, text="Number of workers")
         worker_lbl.pack()
         worker_entry = tk.Entry(self, textvariable=self.workers_var)
         worker_entry.pack()
         
-        batch_size_lbl = tk.Label(self, text="Batch size")
+        batch_size_lbl = ctk.CTkLabel(self, text="Batch size")
         batch_size_lbl.pack()
         batch_size_entry = tk.Entry(self, textvariable=self.batch_size_var)
         batch_size_entry.pack()
@@ -200,12 +201,10 @@ class TrainingFrame(tk.Frame):
         )
         seg_chkb.pack()
 
-        data_file_btn = tk.Button(self,
+        data_file_btn = ctk.CTkButton(self,
             text="Data file",
             width=20,
             height=3,
-            bg="lightgrey",
-            fg="black",
             command=lambda: self.open_yaml_file(self.data_file_var)
         )
         data_file_btn.pack()
@@ -213,12 +212,10 @@ class TrainingFrame(tk.Frame):
         data_file_entry = tk.Entry(self, textvariable=self.data_file_var, state="disabled")
         data_file_entry.pack()
         
-        model_config_file_btn = tk.Button(self,
+        model_config_file_btn = ctk.CTkButton(self,
             text="Model Configuration File",
             width=20,
             height=3,
-            bg="lightgrey",
-            fg="black",
             command=lambda: self.open_yaml_file(self.model_config)
         )
         model_config_file_btn.pack()
@@ -226,7 +223,7 @@ class TrainingFrame(tk.Frame):
         model_config_file_entry = tk.Entry(self, textvariable=self.model_config, state="disabled")
         model_config_file_entry.pack()
         
-        model_weights_file_btn = tk.Button(self,
+        model_weights_file_btn = ctk.CTkButton(self,
             text="Model Weights File",
             width=20,
             height=3,
@@ -239,12 +236,10 @@ class TrainingFrame(tk.Frame):
         model_weights_file_entry = tk.Entry(self, textvariable=self.model_var, state="disabled")
         model_weights_file_entry.pack()
         
-        training_file_btn = tk.Button(self,
+        training_file_btn = ctk.CTkButton(self,
             text="Training Configuration File",
             width=20,
             height=3,
-            bg="lightgrey",
-            fg="black",
             command=lambda: self.open_yaml_file(self.training_config_var)
         )
         training_file_btn.pack()
@@ -252,12 +247,10 @@ class TrainingFrame(tk.Frame):
         training_file_entry = tk.Entry(self, textvariable=self.training_config_var, state="disabled")
         training_file_entry.pack()
         
-        run_btn = tk.Button(self,
+        run_btn = ctk.CTkButton(self,
             text="Run",
             width=50,
             height=10,
-            bg="red",
-            fg="white",
             command=self.run
         )
         run_btn.pack()
