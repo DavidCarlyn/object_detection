@@ -105,10 +105,10 @@ class InferenceFrame(ctk.CTkFrame):
             height=3,
             command=self.open_model_file
         )
-        model_btn.pack()
+        model_btn.pack(pady=4)
 
         model_path_entry = tk.Entry(self, textvariable=self.model_path_var, state="disabled")
-        model_path_entry.pack()
+        model_path_entry.pack(pady=4)
 
         load_img_btn = ctk.CTkButton(self,
             text="Load Image/Video",
@@ -116,11 +116,11 @@ class InferenceFrame(ctk.CTkFrame):
             height=3,
             command=self.open_img_file
         )
-        load_img_btn.pack()
+        load_img_btn.pack(pady=4)
         
 
         target_path_entry = tk.Entry(self, textvariable=self.target_path_var, state="disabled")
-        target_path_entry.pack()
+        target_path_entry.pack(pady=4)
 
         save_dir_btn = ctk.CTkButton(self,
             text="Save Directory",
@@ -128,15 +128,15 @@ class InferenceFrame(ctk.CTkFrame):
             height=3,
             command=self.open_save_dir
         )
-        save_dir_btn.pack()
+        save_dir_btn.pack(pady=4)
 
         save_dir_entry = tk.Entry(self, textvariable=self.save_dir_var, state="disabled")
-        save_dir_entry.pack()
+        save_dir_entry.pack(pady=4)
 
         result_lbl = ctk.CTkLabel(self, text="Result Name")
-        result_lbl.pack()
+        result_lbl.pack(pady=4)
         result_name_entry = tk.Entry(self, textvariable=self.result_name_var)
-        result_name_entry.pack()
+        result_name_entry.pack(pady=4)
 
         seg_chkb = ttk.Checkbutton(self,
             text='Use segmentation',
@@ -144,15 +144,16 @@ class InferenceFrame(ctk.CTkFrame):
             onvalue=True,
             offvalue=False
         )
-        seg_chkb.pack()
+        seg_chkb.pack(pady=4)
 
         run_btn = ctk.CTkButton(self,
             text="Run",
             width=50,
             height=10,
+            fg_color="red",
             command=self.run
         )
-        run_btn.pack()
+        run_btn.pack(pady=4)
 
 
 

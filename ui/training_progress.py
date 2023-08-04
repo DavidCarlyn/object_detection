@@ -52,20 +52,21 @@ class TrainingProgressFrame(ctk.CTkFrame):
             self.progress_lbl = tk.Label(self,
                 text="Starting up the training."
             )
-            self.progress_lbl.pack()
+            self.progress_lbl.pack(pady=4)
             self.progress_bar = ttk.Progressbar(self,
                 orient='horizontal',
                 mode='determinate',
                 length=300,
             )
-            self.progress_bar.pack()
-            self.stop_btn = tk.Button(self,
+            self.progress_bar.pack(pady=8)
+            self.stop_btn = ctk.CTkButton(self,
                 text="Stop",
                 width=20,
                 height=3,
-                command=lambda: self.stop_run()
+                fg_color="red",
+                command=lambda: self.stop_run(),
             )
-            self.stop_btn.pack()
+            self.stop_btn.pack(pady=4)
 
             self.back_btn["state"] = "disabled"
         elif state == TrainingState.CANCELLED:
@@ -73,12 +74,12 @@ class TrainingProgressFrame(ctk.CTkFrame):
             self.progress_bar.destroy()
             self.progress_lbl.destroy()
             end_lbl = HeaderLabel(self, text="Training Cancelled")
-            end_lbl.pack()
+            end_lbl.pack(pady=4)
             self.back_btn["state"] = "normal"
         elif old_state != TrainingState.CANCELLED and state == TrainingState.COMPLETED:
             self.stop_btn.destroy()
             end_lbl = HeaderLabel(self, text="Training Completed!")
-            end_lbl.pack()
+            end_lbl.pack(pady=4)
             self.back_btn["state"] = "normal"
 
     def build(self, back_cmd=lambda: None):
@@ -89,4 +90,4 @@ class TrainingProgressFrame(ctk.CTkFrame):
             text="Training Configuration Page",
             command=back_cmd
         )
-        self.back_btn.pack()
+        self.back_btn.pack(pady=4)
