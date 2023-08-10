@@ -10,7 +10,7 @@ def create_executable(site_packages_path="virtual_environments/det1/Lib/site-pac
         "--hidden-import", "scipy",
         "--hidden-import", "scipy.signal",
         "--exclude-module", "test", # Yolov7 imports a local test which conflicts with the default test
-        "--onefile",
+        "--onedir",
         "--console",
         "--noconfirm"
     ])
