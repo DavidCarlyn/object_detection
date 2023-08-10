@@ -33,7 +33,6 @@ class YOLO_Call:
             if not self.seg:
                 sys.path.insert(0, detect_path)
                 if self.train:
-                    importlib
                     yolov7_train_main(**self.kwargs)
                 else:
                     yolov7_detect_main(**self.kwargs)
@@ -48,11 +47,11 @@ class YOLO_Call:
 
 def yolov7_train_seg_main(**kwargs):
     from seg.segment.train import run
-    run(kwargs)
+    run(**kwargs)
 
 def yolov7_seg_predict_main(**kwargs):
     from seg.segment.predict import run
-    run(kwargs)
+    run(**kwargs)
 
 def yolov7_train_main(**kwargs):
     import argparse
