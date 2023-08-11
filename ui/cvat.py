@@ -91,7 +91,7 @@ class CVATFrame(ctk.CTkFrame):
         os.rmdir(lbl_dir)
 
     def build(self, back_cmd=lambda: None):
-        greeting = HeaderLabel(self, text="Inference Frame")
+        greeting = HeaderLabel(self, text="Annotation Conversion Frame")
         greeting.pack()
 
         back_btn = MenuButton(self,
