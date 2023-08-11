@@ -101,7 +101,6 @@ class TrainingFrame(ctk.CTkFrame):
         data_file = load_yaml(os.path.join(self.data_file_var.get()))
 
         ex_path = None
-        print(data_file['train'])
         for root, dirs, files in os.walk(data_file['train']):
             for f in files:
                 if os.path.splitext(f)[1].lower() in [".png", ".jpg"]:
@@ -124,7 +123,7 @@ class TrainingFrame(ctk.CTkFrame):
         devices = "-1"
         if self.use_gpu_var.get():
             devices = ",".join(get_available_gpus())
-
+        
         yolo_call = YOLO_Call(
             seg=self.use_segmentation_var.get(),
             train=True,
@@ -142,7 +141,7 @@ class TrainingFrame(ctk.CTkFrame):
         )
 
         self.save_cache()
-        self.open_progress_page(yolo_call, save_path)
+        self.open_progress_page(yolo_call, save_path, total_epochs=self.epochs_var.get())
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Training Frame")

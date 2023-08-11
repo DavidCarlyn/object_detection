@@ -9,7 +9,7 @@ def create_executable(site_packages_path=None, exe_type="onefile"):
         "--hidden-import", "scipy",
         "--hidden-import", "scipy.signal",
         "--exclude-module", "test", # Yolov7 imports a local test which conflicts with the default test
-        "--console",
+        "--onedir",
         "--noconfirm"
     ]
 
