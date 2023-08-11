@@ -4,11 +4,11 @@ from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
 
 class HomeFrame(ctk.CTkFrame):
-    def __init__(self, root, train_cmd=lambda: None, infer_cmd=lambda: None):
+    def __init__(self, root, train_cmd=lambda: None, infer_cmd=lambda: None, anno_cmd=lambda: None):
         super().__init__(root)
-        self.build(train_cmd, infer_cmd)
+        self.build(train_cmd, infer_cmd, anno_cmd)
 
-    def build(self, train_cmd=lambda: None, infer_cmd=lambda: None):
+    def build(self, train_cmd=lambda: None, infer_cmd=lambda: None, anno_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Rust Detector Management")
         greeting.grid(row=0, column=0)
 
@@ -26,4 +26,10 @@ class HomeFrame(ctk.CTkFrame):
             command=infer_cmd
         )
         infer_btn.pack(side=ctk.RIGHT, padx=20, pady=20)
+        
+        anno_btn = MenuButton(button_frame,
+            text="Convert\nAnnotations",
+            command=anno_cmd
+        )
+        anno_btn.pack(side=ctk.RIGHT, padx=20, pady=20)
 
