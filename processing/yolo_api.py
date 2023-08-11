@@ -30,20 +30,21 @@ class YOLO_Call:
         detect_path = os.path.join(ex.__path__[0], "yolov7")
         seg_path = os.path.join(ex.__path__[0], "yolov7_seg")
         with cur_std_out as sys.stdout:
-            if not self.seg:
-                sys.path.insert(0, detect_path)
-                if self.train:
-                    yolov7_train_main(**self.kwargs)
+            with cur_std_out as sys.stderr:
+                if not self.seg:
+                    sys.path.insert(0, detect_path)
+                    if self.train:
+                        yolov7_train_main(**self.kwargs)
+                    else:
+                        yolov7_detect_main(**self.kwargs)
+                    sys.path.remove(detect_path)
                 else:
-                    yolov7_detect_main(**self.kwargs)
-                sys.path.remove(detect_path)
-            else:
-                sys.path.insert(0, seg_path)
-                if self.train:
-                    yolov7_train_seg_main(**self.kwargs)
-                else:
-                    yolov7_seg_predict_main(**self.kwargs)
-                sys.path.remove(seg_path)
+                    sys.path.insert(0, seg_path)
+                    if self.train:
+                        yolov7_train_seg_main(**self.kwargs)
+                    else:
+                        yolov7_seg_predict_main(**self.kwargs)
+                    sys.path.remove(seg_path)
 
 def yolov7_train_seg_main(**kwargs):
     from seg.segment.train import run
@@ -51,6 +52,9 @@ def yolov7_train_seg_main(**kwargs):
 
 def yolov7_seg_predict_main(**kwargs):
     from seg.segment.predict import run
+    kwargs["imgsz"] = kwargs["img"]
+    del kwargs["img"]
+    del kwargs["no_trace"]
     run(**kwargs)
 
 def yolov7_train_main(**kwargs):

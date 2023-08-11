@@ -44,24 +44,32 @@ class App(ctk.CTk):
             self.run_thread.terminate()
             self.run_thread.join()
 
-    def update_train_window(self, save_path, frame):
+    def update_train_window(self, save_path, frame, total_epochs):
         if frame.is_training_ended():
             print("Training Ended")
             return
 
         results_path = os.path.join(save_path, "results.txt")
+        results_path_csv = os.path.join(save_path, "results.csv") # Segmentation saves a .csv
+        cur_epoch = -1
+        exists = False
         if os.path.exists(results_path):
             with open(results_path) as f:
                 lines = f.readlines()
                 epoch_info = lines[-1].split()[0].split("/")
                 if len(epoch_info) == 2:
                     cur_epoch = int(epoch_info[0])
-                    total_epoch = int(epoch_info[1])
-                    if cur_epoch != self.last_result:
-                        frame.update_progress(cur_epoch+1, total_epoch+1)
-                        self.last_result = cur_epoch
+        elif os.path.exists(results_path_csv):
+            with open(results_path_csv) as f:
+                lines = f.readlines()
+                if len(lines) > 1:
+                    cur_epoch = int(lines[-1].split(",")[0])
 
-        self.after(1000, self.update_train_window, save_path, frame)
+        if cur_epoch != self.last_result:
+            frame.update_progress(cur_epoch+1, total_epochs)
+            self.last_result = cur_epoch
+
+        self.after(1000, self.update_train_window, save_path, frame, total_epochs)
     
     def update_infer_window(self, save_path, frame):
         if frame.is_inference_ended():
@@ -78,7 +86,7 @@ class App(ctk.CTk):
 
         self.after(1000, self.update_infer_window, save_path, frame)
         
-    def build_train_progress_window(self, yolo_call_obj, save_path):
+    def build_train_progress_window(self, yolo_call_obj, save_path, total_epochs):
         self.clear_window()
         frame = TrainingProgressFrame(self, back_cmd=self.build_train_window, stop_thread_cmd=self.stop_thread)
         frame.pack()
@@ -87,7 +95,7 @@ class App(ctk.CTk):
         self.run_thread = mp.Process(target=yolo_call_obj.call)
         self.run_thread.start()
 
-        self.update_train_window(save_path, frame)
+        self.update_train_window(save_path, frame, total_epochs)
     
     def build_infer_progress_window(self, yolo_call_obj, save_path):
         self.clear_window()

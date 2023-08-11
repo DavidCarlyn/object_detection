@@ -35,6 +35,8 @@ class InferenceFrame(ctk.CTkFrame):
 
         self.use_segmentation_var = tk.BooleanVar(value=self.cache["use_segmentation"])
 
+        self.error_lbl = None
+
         self.build(back_cmd)
 
     def open_model_file(self):
@@ -70,8 +72,36 @@ class InferenceFrame(ctk.CTkFrame):
             scanner = VideoScanner(path)
             return scanner.get_frame_size()
 
+    def get_source_frames(self):
+        path = self.target_path_var.get()
+        ext = os.path.splitext(path)[1].lower()
+        # If is image
+        if ext in [".png", ".jpg"]:
+            return 1
+        elif ext in [".mp4"]: # else is a video
+            scanner = VideoScanner(path)
+            return scanner.get_num_frames()
+
+    def add_exists_error(self, path):
+        if self.error_lbl is not None:
+            return
+        
+        self.error_lbl = tk.Label(self,
+            text=f"ERROR: {path} already exists. Please choose a different 'Result Name' or 'Save Directory'.",
+            bg="yellow",
+            fg="red"
+        )
+        self.error_lbl.pack()
+
     def run(self):
         save_path = os.path.join(self.save_dir_var.get(), self.result_name_var.get()) # NEED TO CHECK UNIQUE
+        if os.path.exists(save_path):
+            self.add_exists_error(save_path)
+            return
+        img_size = self.get_source_size()
+        frames = self.get_source_frames()
+        if not self.use_segmentation_var.get():
+            img_size = min(img_size)
 
         yolo_call = YOLO_Call(
             seg=self.use_segmentation_var.get(),
@@ -81,10 +111,13 @@ class InferenceFrame(ctk.CTkFrame):
             project=self.save_dir_var.get(),
             name=self.result_name_var.get(),
             source=self.target_path_var.get(),
-            img=min(self.get_source_size()),
+            img=img_size,
             save_txt=True,
             no_trace=True      
         )
+
+        video_name = os.path.basename(self.target_path_var.get())
+
 
         self.save_cache()
         self.open_progress_page(yolo_call, save_path)

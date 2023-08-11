@@ -85,6 +85,9 @@ class VideoScanner:
         height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         return (int(width), int(height))
 
+    def get_num_frames(self):
+        return self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
+
 class PipeFile(io.RawIOBase):
     def __init__(self, conn):
         super().__init__()
