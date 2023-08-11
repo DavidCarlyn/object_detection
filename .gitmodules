@@ -6,3 +6,6 @@
 	path = externals/yolov7_seg
 	url = https://github.com/WongKinYiu/yolov7.git
 	branch = u7
+[submodule "externals/json2yolo"]
+	path = externals/json2yolo
+	url = https://github.com/ultralytics/JSON2YOLO.git

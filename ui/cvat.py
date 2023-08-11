@@ -10,6 +10,7 @@ from ui.buttons import MenuButton
 from ui.labels import HeaderLabel
 from processing.utils import load_cache, save_cache, VideoScanner
 from processing.yolo_api import YOLO_Call
+from processing.convert import convert
 
 
 """
@@ -24,7 +25,7 @@ It should only have a SAVE DIRECTORY and an upload for the CVAT ANNOTATIONS.
 
 CVAT_CACHE_NAME = "cvat.cache"
 class CVATFrame(ctk.CTkFrame):
-    def __init__(self, root, back_cmd=lambda: None, open_progress_page=lambda: None):
+    def __init__(self, root, back_cmd=lambda: None):
         super().__init__(root)
 
         self.cache = load_cache(CVAT_CACHE_NAME)
@@ -36,13 +37,13 @@ class CVATFrame(ctk.CTkFrame):
             }
 
         self.result_name_var = tk.StringVar(value=self.cache["result_name"])
-        self.cvat_path_var = tk.StringVar(value=self.cache["cvat"])
+        self.cvat_path_var = tk.StringVar(value=self.cache["target"])
         self.save_dir_var = tk.StringVar(value=self.cache["save_dir"])
         self.build(back_cmd)
 
     def open_cvat_file(self):
-        file = askopenfile(mode ='r', filetypes =[('Model Files', '*.cvat')])
-        self.cvat_path_var.set(file.name)
+        cfile = askopenfile(mode ='r', filetypes =[('XML', '*.xml')])
+        self.cvat_path_var.set(cfile.name)
 
     def open_save_dir(self):
         dir_path = askdirectory()
@@ -58,8 +59,12 @@ class CVATFrame(ctk.CTkFrame):
 
     def run(self):
         save_path = os.path.join(self.save_dir_var.get(), self.result_name_var.get()) # NEED TO CHECK UNIQUE
-
         self.save_cache()
+
+        os.makedirs(save_path, exist_ok=True)
+        convert("cvat", "yolo", self.cvat_path_var.get(), "", os.path.join(self.save_dir_var.get(), self.result_name_var.get()))
+
+        print("HI")
 
     def build(self, back_cmd=lambda: None):
         greeting = HeaderLabel(self, text="Inference Frame")
@@ -89,5 +94,14 @@ class CVATFrame(ctk.CTkFrame):
 
         save_dir_entry = tk.Entry(self, textvariable=self.save_dir_var, state="disabled")
         save_dir_entry.pack(pady=4)
+
+        run_btn = ctk.CTkButton(self,
+            text="Run",
+            width=50,
+            height=10,
+            fg_color="red",
+            command=self.run
+        )
+        run_btn.pack(pady=4)
 
         

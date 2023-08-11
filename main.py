@@ -10,6 +10,7 @@ from ui.inference import InferenceFrame
 from ui.training import TrainingFrame
 from ui.training_progress import TrainingProgressFrame
 from ui.inference_progress import InferenceProgressFrame
+from ui.cvat import CVATFrame
 
 from processing.utils import execute_command
 
@@ -36,6 +37,11 @@ class App(ctk.CTk):
     def build_train_window(self):
         self.clear_window()
         frame = TrainingFrame(self, back_cmd=self.build_home_window, open_progress_page=self.build_train_progress_window)
+        frame.pack()
+
+    def build_anno_convert_window(self):
+        self.clear_window()
+        frame = CVATFrame(self, back_cmd=self.build_home_window)
         frame.pack()
 
     def stop_thread(self):
@@ -118,7 +124,8 @@ class App(ctk.CTk):
         self.clear_window()
         home_page = HomeFrame(self,
             train_cmd=self.build_train_window,
-            infer_cmd=self.build_infer_window
+            infer_cmd=self.build_infer_window,
+            anno_cmd=self.build_anno_convert_window
         )
         home_page.pack()
 
