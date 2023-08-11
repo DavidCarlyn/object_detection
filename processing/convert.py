@@ -1,6 +1,17 @@
-from argparse import ArgumentParser
+import os
 
+from argparse import ArgumentParser
 from globox import AnnotationSet
+
+def json2yolo(tgt_dir, use_segments, save_dir):
+    import importlib
+    import sys
+    ex = importlib.import_module("externals")
+    ex_path = os.path.join(ex.__path__[0], "json2yolo")
+    sys.path.insert(0, ex_path)
+    from general_json2yolo import convert_coco_json
+    convert_coco_json(tgt_dir, use_segments=use_segments, save_dir=save_dir)
+    sys.path.remove(ex_path)
 
 def convert(src_format, dest_format, src_path, src_path2, dest_path):
     print(src_format, dest_format)
