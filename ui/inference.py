@@ -5,6 +5,7 @@ import tkinter as tk
 import customtkinter as ctk
 from tkinter import ttk
 from tkinter.filedialog import askopenfile, askdirectory
+from PIL import Image
 
 from ui.buttons import MenuButton
 from ui.labels import HeaderLabel

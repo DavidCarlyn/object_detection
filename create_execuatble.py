@@ -9,7 +9,6 @@ def create_executable(site_packages_path=None, exe_type="onefile"):
         "--hidden-import", "scipy",
         "--hidden-import", "scipy.signal",
         "--exclude-module", "test", # Yolov7 imports a local test which conflicts with the default test
-        "--onedir",
         "--noconfirm"
     ]
 
@@ -23,6 +22,6 @@ def create_executable(site_packages_path=None, exe_type="onefile"):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--site-packages", type=str, default=None)
-    parser.add_argument("--exe_type", type=str, default="onefile")
+    parser.add_argument("--exe_type", type=str, default="onedir")
     args = parser.parse_args()
     create_executable(site_packages_path=args.site_packages, exe_type=args.exe_type)

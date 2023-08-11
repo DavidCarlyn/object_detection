@@ -81,6 +81,10 @@ class App(ctk.CTk):
         if frame.is_inference_ended():
             print("Inference Ended")
             return
+        if not self.run_thread.is_alive():
+            frame.update_progress(1, 1)
+            print("Inference Ended")
+            return
 
         while self.process_conn.poll():            
             line = self.process_conn.recv()
